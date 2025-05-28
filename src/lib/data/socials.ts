@@ -1,10 +1,11 @@
+import { IconType } from "react-icons";
 import {
-  IconType,
-  SiGithub,
-  SiInstagram,
-  SiSpotify,
-  SiSteam,
-} from "@icons-pack/react-simple-icons";
+  FaGithub,
+  FaInstagram,
+  FaLinkedin,
+  FaSpotify,
+  FaSteam,
+} from "react-icons/fa6";
 
 interface SocialItem {
   icon: IconType;
@@ -14,22 +15,27 @@ interface SocialItem {
 
 export const socials: SocialItem[] = [
   {
-    icon: SiInstagram,
+    icon: FaInstagram,
     title: "Instagram",
     href: "https://instagram.com/firdaus.nailul",
   },
   {
-    icon: SiGithub,
+    icon: FaGithub,
     title: "Github",
     href: "https://github.com/nailnafir",
   },
   {
-    icon: SiSteam,
+    icon: FaLinkedin,
+    title: "LinkedIn",
+    href: "https://linkedin.com/nailnafir",
+  },
+  {
+    icon: FaSteam,
     title: "Steam",
     href: "https://steamcommunity.com/id/nailnafir",
   },
   {
-    icon: SiSpotify,
+    icon: FaSpotify,
     title: "Spotify",
     href: "https://open.spotify.com/user/10969nailnafir",
   },

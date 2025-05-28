@@ -1,18 +1,28 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 
 export function PreLoader() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    if (isLoading) {
+      document.documentElement.classList.add("overflow-hidden");
+      window.scrollTo(0, 0);
+    } else {
+      document.documentElement.classList.remove("overflow-hidden");
+    }
+
     const timer = setTimeout(() => {
       setIsLoading(false);
     }, 3000);
 
-    return () => clearTimeout(timer);
-  }, []);
+    return () => {
+      clearTimeout(timer);
+      document.documentElement.classList.remove("overflow-hidden");
+    };
+  }, [isLoading]);
 
   if (!isLoading) return null;
 

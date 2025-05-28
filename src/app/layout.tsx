@@ -5,7 +5,7 @@ import { PreLoader } from "@/components/pre-loader";
 import { CircleCursor } from "@/components/circle-cursor";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const manrope = Rubik({
+const rubik = Rubik({
   subsets: ["latin"],
   display: "swap",
 });
@@ -22,7 +22,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="id" suppressHydrationWarning>
-      <body className={`${manrope.className} antialiased`}>
+      <body className={`${rubik.className} antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

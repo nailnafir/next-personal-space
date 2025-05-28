@@ -6,7 +6,7 @@ type TypewriterProps = {
   sentences: string[];
 };
 
-export function TypeWriter({ sentences }: TypewriterProps) {
+export default function TypeWriter({ sentences }: TypewriterProps) {
   const [text, setText] = useState("");
   const [index, setIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);

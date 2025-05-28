@@ -1,32 +1,30 @@
 "use client";
 
 import React, { useState } from "react";
-import { cn } from "@/lib/utils";
-import { motion } from "framer-motion";
-import { menus } from "@/lib/menus";
-import { ThemeToggle } from "./theme-toggle";
 import Link from "next/link";
+import { motion } from "motion/react";
+import { menus } from "@/lib/data/menus";
+import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { MessageSquare, Menu, X } from "lucide-react";
+import { MessageSquare, Menu, X, Code2 } from "lucide-react";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 items-center w-full backdrop-blur border-b border-gray-800/20 bg-white/70 dark:bg-black/30">
+    <header className="sticky top-0 z-50 items-center w-full backdrop-blur border-b border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-black/30">
       <div className="max-w-full mx-auto sm:px-32 px-4">
         <div className="flex items-center justify-between h-16">
           {/* LOGO */}
           <motion.div
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -18 }}
             animate={{ opacity: 1, x: 0 }}
             className="flex items-center gap-2"
           >
             <Link href="/">
-              <span className="text-xl font-semibold flex items-center gap-1 dark:text-white text-black">
-                <span className="px-2 dark:bg-white dark:text-black bg-black text-white">
-                  NAILNAFIR
-                </span>
+              <span className="flex flex-row items-center gap-1 dark:text-white text-black">
+                <Code2 className="h-8 w-8" />
+                <span className="font-bold text-xl">NAILNAFIR</span>
               </span>
             </Link>
           </motion.div>
@@ -37,7 +35,7 @@ export default function Header() {
               <Link
                 key={index}
                 href={`#${menu.title.toLowerCase()}`}
-                className="px-3 py-2 rounded-md text-sm font-medium hover:bg-gray-700/20 dark:text-white text-black"
+                className="px-3 py-2 rounded-md text-sm font-medium transition duration-500 hover:bg-black/25 hover:dark:bg-white/25 dark:text-white text-black"
               >
                 <span className="flex items-center gap-1">
                   <menu.icon className="w-4 h-4" />
@@ -53,11 +51,10 @@ export default function Header() {
             <div className="hidden md:flex">
               <Button
                 variant="default"
-                size="sm"
                 onClick={() => window.open("https://t.me/nailnafir", "_blank")}
-                className="gap-2 rounded-full border-2 dark:bg-white dark:hover:bg-white bg-black hover:bg-black px-4 py-2"
+                className="rounded-full dark:bg-white dark:hover:bg-white bg-black hover:bg-black py-2"
               >
-                <MessageSquare className="h-4 w-4 text-white dark:text-black" />
+                <MessageSquare className="text-white dark:text-black" />
                 <span className="text-sm text-white dark:text-black font-semibold">
                   Ngobrol, Yuk!
                 </span>
@@ -89,14 +86,14 @@ export default function Header() {
         {/* Mobile Menu */}
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             className="md:hidden absolute top-full left-0 w-full bg-white/85 dark:bg-black/85 backdrop-blur border-b border-gray-800/20 z-40 flex flex-col space-y-2 px-4 py-4"
           >
             {menus.map((menu, index) => (
               <Link
                 key={index}
-                href={cn("#", menu.title.toLowerCase())}
+                href={`#${menu.title.toLowerCase()}`}
                 className="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-700/20 dark:text-white text-black"
               >
                 <span className="flex items-center gap-2">

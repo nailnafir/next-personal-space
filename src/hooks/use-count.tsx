@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { animate } from "framer-motion";
+import { animate } from "motion/react";
 
 export function useCount(end: number, duration = 1.5) {
   const [value, setValue] = useState(0);

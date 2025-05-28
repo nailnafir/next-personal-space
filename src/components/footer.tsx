@@ -1,13 +1,13 @@
-import Link from "next/link";
-import { Brain, Coffee, Heart, Send } from "lucide-react";
+import { Brain, Code2, Coffee, Heart, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { socials } from "@/lib/social";
-import { menus } from "@/lib/menus";
+import { socials } from "@/lib/data/socials";
+import { menus } from "@/lib/data/menus";
+import Link from "next/link";
 
 export default function Footer() {
   const getCopyrightyear = () => {
-    const projectYear = 2025;
+    const projectYear = 2020;
     const currentYear = new Date().getFullYear();
 
     return projectYear === currentYear
@@ -21,13 +21,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 sm:px-32 px-4">
           {/* Me */}
           <div className="space-y-4">
-            <div className="flex items-center gap-1">
-              <span className="text-xl font-semibold dark:text-white text-black">
-                <span className="px-2 dark:bg-white dark:text-black bg-black text-white">
-                  NAILNAFIR
-                </span>
+            <Link href="/">
+              <span className="flex flex-row items-center gap-1 dark:text-white text-black">
+                <Code2 className="h-8 w-8" />
+                <span className="font-bold text-xl">NAILNAFIR</span>
               </span>
-            </div>
+            </Link>
             <p className="text-sm dark:text-gray-400 text-gray-600">
               Sosial Media
             </p>
@@ -36,9 +35,9 @@ export default function Footer() {
                 <Link
                   key={index}
                   href={social.href ?? "#"}
-                  className="hover:text-purple-500 transition-colors dark:text-gray-400 text-gray-600"
+                  className="hover:text-white transition-colors"
                 >
-                  <social.icon className="w-5 h-5" />
+                  <social.icon className="w-4 h-4" />
                   <span className="sr-only">{social.title}</span>
                 </Link>
               ))}
@@ -53,7 +52,7 @@ export default function Footer() {
                 <li key={index}>
                   <Link
                     href={`#${menu.title.toLowerCase()}`}
-                    className="hover:text-purple-500 transition-colors"
+                    className="hover:text-white transition-colors"
                   >
                     {menu.title}
                   </Link>
