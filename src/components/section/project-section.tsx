@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { getProjects } from "@/lib/api/fetch-projects";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, CheckCircle } from "lucide-react";
+import { AlertCircle, ArrowUp, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
@@ -32,8 +32,10 @@ export default function ProjectSection() {
   useEffect(() => {
     if (error) {
       setAlert(error.message);
+    } else if (projects && projects.length > 0) {
+      setAlert(null);
     }
-  }, [error]);
+  }, [error, projects]);
 
   return (
     <section
@@ -128,7 +130,7 @@ export default function ProjectSection() {
                       exit={{ opacity: 0, y: -30 }}
                       transition={{ duration: 0.5, ease: "easeInOut" }}
                     >
-                      <CardContainer containerClassName="p-0">
+                      <CardContainer containerClassName="p-0 inter-var">
                         <CardBody className="transition duration-500 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] bg-white/70 dark:bg-black/30 border-gray-200 dark:border-gray-800 w-full rounded-xl p-6 h-[30rem] border backdrop-blur">
                           <CardItem
                             translateZ="50"
@@ -167,10 +169,13 @@ export default function ProjectSection() {
                             className="w-full absolute bottom-6 left-0 px-6"
                           >
                             <Button
-                              className="rounded-xl w-full bg-black dark:bg-white dark:text-black text-white text-sm font-bold"
+                              className="rounded-full gap-2 w-full bg-black dark:bg-white dark:text-black"
                               onClick={() => window.open(project.url, "_blank")}
                             >
-                              Kunjungi
+                              <ArrowUp className="text-white dark:text-black" />
+                              <span className="text-sm text-white dark:text-black font-semibold">
+                                Kunjungi
+                              </span>
                             </Button>
                           </CardItem>
                         </CardBody>

@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { socials } from "@/lib/data/socials";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShineBorder } from "@/components/magicui/shine-border";
-import Link from "next/link";
+import { LinkPreview } from "@/components/ui/link-preview";
 
 export default function AboutSection() {
   return (
@@ -23,25 +23,37 @@ export default function AboutSection() {
               &quot;Tak Kenal, Maka Tak Sayang&quot;
             </h3>
             <p className="mt-8 text-base text-gray-600 dark:text-gray-400">
-              Seorang <i>developer</i> kreatif dan penasaran akut yang fokus di{" "}
-              <i>Mobile & Web Development</i>, tapi gak pernah puas di zona
-              nyaman. Suka banget ngulik teknologi baru, apalagi kalo soal{" "}
-              <i>Software</i>, <i>IT Security</i>, <i>Blockchain</i>, dan{" "}
-              <i>Artificial Intelligence</i>. Dunia teknologi itu cepet banget
-              geraknya—yang males belajar bakal ketinggalan, yang rajin ngulik
-              bakal jadi <i>game changer</i>.
+              Seorang{" "}
+              <span className="italic underline font-semibold">developer</span>{" "}
+              kreatif dan penasaran akut yang fokus di{" "}
+              <span className="italic underline font-semibold">
+                Mobile & Web Development
+              </span>
+              , tapi gak pernah puas di zona nyaman. Suka banget ngulik
+              teknologi baru, apalagi kalo soal{" "}
+              <span className="italic underline font-semibold">Software</span>,{" "}
+              <span className="italic underline font-semibold">
+                IT Security
+              </span>
+              ,{" "}
+              <span className="italic underline font-semibold">Blockchain</span>
+              , dan{" "}
+              <span className="italic underline font-semibold">
+                Artificial Intelligence
+              </span>
+              . Dunia teknologi itu cepet banget geraknya. Kalo males belajar
+              bakal ketinggalan, kalo rajin ngulik bakal jadi{" "}
+              <span className="italic underline font-semibold">
+                game changer
+              </span>
+              .
             </p>
             <div className="flex flex-wrap gap-4 mt-8 justify-center">
               {socials.map((social, index) => (
-                <Link
-                  key={index}
-                  href={social.href || "#"}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
+                <LinkPreview key={index} url={social.url}>
                   <Card
                     key={index}
-                    className="relative bg-transparent hover:dark:bg-white/10 transition-all duration-500 ease-in-out"
+                    className="relative bg-white dark:bg-black hover:bg-black/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out"
                   >
                     <ShineBorder
                       shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
@@ -50,7 +62,7 @@ export default function AboutSection() {
                       <social.icon className="w-8 h-8" />
                     </CardContent>
                   </Card>
-                </Link>
+                </LinkPreview>
               ))}
             </div>
           </div>

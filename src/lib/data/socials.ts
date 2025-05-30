@@ -10,33 +10,33 @@ import {
 interface SocialItem {
   icon: IconType;
   title: string;
-  href?: string;
+  url: string;
 }
 
 export const socials: SocialItem[] = [
   {
     icon: FaInstagram,
     title: "Instagram",
-    href: "https://instagram.com/firdaus.nailul",
+    url: "https://instagram.com/firdaus.nailul",
   },
   {
     icon: FaGithub,
     title: "Github",
-    href: "https://github.com/nailnafir",
+    url: "https://github.com/nailnafir",
   },
   {
     icon: FaLinkedin,
     title: "LinkedIn",
-    href: "https://linkedin.com/nailnafir",
+    url: "https://linkedin.com/in/nailul-firdaus/",
   },
   {
     icon: FaSteam,
     title: "Steam",
-    href: "https://steamcommunity.com/id/nailnafir",
+    url: "https://steamcommunity.com/id/nailnafir",
   },
   {
     icon: FaSpotify,
     title: "Spotify",
-    href: "https://open.spotify.com/user/10969nailnafir",
+    url: "https://open.spotify.com/user/10969nailnafir",
   },
 ];

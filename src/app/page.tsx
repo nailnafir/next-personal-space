@@ -2,7 +2,7 @@
 
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import BackgroundGrid from "@/components/background-grid";
+import BackgroundGrid from "@/components/aceternity/background-grid";
 import InfoSection from "@/components/section/info-section";
 import FloatingIcons from "@/components/floating-icons";
 import FloatingTexts from "@/components/floating-texts";

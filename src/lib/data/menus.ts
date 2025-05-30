@@ -16,6 +16,6 @@ export const menus: MenuItem[] = [
   },
   {
     icon: Star,
-    title: "Kemampuan",
+    title: "Keahlian",
   },
 ];

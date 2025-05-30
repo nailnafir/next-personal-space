@@ -20,71 +20,88 @@ import {
 interface SkillItem {
   icon: IconType;
   title: string;
+  url: string;
 }
 
 export const skills: SkillItem[] = [
   {
     icon: SiBootstrap,
     title: "Bootstrap",
+    url: "https://getbootstrap.com/",
   },
   {
     icon: SiTailwindcss,
     title: "Tailwind",
+    url: "https://tailwindcss.com/",
   },
   {
     icon: SiReact,
     title: "React",
+    url: "https://react.dev/",
   },
   {
     icon: SiNextdotjs,
     title: "Next",
+    url: "https://nextjs.org/",
   },
   {
     icon: SiExpress,
     title: "Express",
+    url: "https://expressjs.com/",
   },
   {
     icon: SiDotnet,
     title: ".NET",
+    url: "https://dotnet.microsoft.com/id-id/",
   },
   {
     icon: SiLaravel,
     title: "Laravel",
+    url: "https://laravel.com/",
   },
   {
     icon: FaJava,
     title: "Java",
+    url: "https://www.java.com/",
   },
   {
     icon: SiKotlin,
     title: "Kotlin",
+    url: "https://kotlinlang.org/",
   },
   {
     icon: FaFlutter,
-    title: "Kotlin",
+    title: "Flutter",
+    url: "https://flutter.dev/",
   },
   {
     icon: SiJetpackcompose,
     title: "Jetpack Compose",
+    url: "https://developer.android.com/jetpack/compose",
   },
   {
     icon: SiMysql,
     title: "MYSQL",
+    url: "https://www.mysql.com/",
   },
   {
     icon: SiPostgresql,
-    title: "Postgresql",
+    title: "PostgreSQL",
+    url: "https://www.postgresql.org/",
   },
   {
     icon: SiMongodb,
-    title: "Mongodb",
+    title: "MongoDB",
+    url: "https://www.mongodb.com/",
   },
   {
     icon: SiFirebase,
     title: "Firebase",
+    url: "https://firebase.google.com/",
   },
   {
     icon: SiSupabase,
     title: "Supabase",
+    url: "https://supabase.com/",
   },
 ];

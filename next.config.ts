@@ -9,6 +9,9 @@ const nextConfig: NextConfig = {
         pathname: "/v0/b/**",
       },
     ],
+    domains: [
+      "api.microlink.io",
+    ],
   },
 };
 

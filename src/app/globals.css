@@ -87,23 +87,21 @@
 
   /* Animated Gradient Text */
 
-  /* Pulsating Button */
-  --animate-pulse: pulse var(--duration) ease-out infinite;
+  --animate-border-pulse:border-pulse 1.5s infinite;
 
-  @keyframes pulse {
+  @keyframes border-pulse {
 
     0%,
     100% {
-      boxShadow: 0 0 0 0 var(--pulse-color);
+      box-shadow: 0 0 0 0 var(--color-ring);
     }
 
     50% {
-      boxShadow: 0 0 0 8px var(--pulse-color);
+      box-shadow: 0 0 0 8px var(--color-ring);
     }
   }
 }
 
-/* Pulsating Button */
 
 :root {
   --radius: 0.625rem;

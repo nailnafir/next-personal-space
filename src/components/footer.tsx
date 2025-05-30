@@ -34,7 +34,7 @@ export default function Footer() {
               {socials.map((social, index) => (
                 <Link
                   key={index}
-                  href={social.href ?? "#"}
+                  href={social.url || "#"}
                   className="hover:text-white transition-colors"
                 >
                   <social.icon className="w-4 h-4" />
