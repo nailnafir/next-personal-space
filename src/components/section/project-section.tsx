@@ -1,19 +1,20 @@
 "use client";
 
-import useSWR from "swr";
+import { cn } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { getProjects } from "@/lib/api/fetch-projects";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, ArrowUp, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   CardBody,
   CardContainer,
   CardItem,
 } from "@/components/aceternity/three-dimension-card";
 import Image from "next/image";
+import useSWR from "swr";
 
 export default function ProjectSection() {
   const { data: projects, error, isLoading } = useSWR("projects", getProjects);
@@ -64,7 +65,7 @@ export default function ProjectSection() {
           <div className="flex flex-row gap-4 sm:justify-center mb-6 overflow-auto">
             <Button
               onClick={() => setFilter("all")}
-              className={`font-bold text-sm ${
+              className={`transition duration-300 font-bold text-sm ${
                 filter === "all"
                   ? "bg-yellow-200 text-yellow-800"
                   : "dark:bg-white bg-black"
@@ -79,7 +80,7 @@ export default function ProjectSection() {
               <Button
                 key={`${index}-${type}`}
                 onClick={() => setFilter(type)}
-                className={`font-bold text-sm ${
+                className={`transition duration-300 font-bold text-sm ${
                   filter === type
                     ? "bg-yellow-200 text-yellow-800"
                     : "dark:bg-white bg-black"
@@ -98,27 +99,29 @@ export default function ProjectSection() {
             ))}
           </div>
 
-          <div className="grid sm:grid-cols-3 grid-cols-1 gap-4 w-full">
+          <div className="flex flex-wrap justify-center gap-4 w-full">
             <AnimatePresence mode="wait">
               {isLoading
                 ? Array.from({ length: 6 }).map((_, indexElement) => (
                     <div
                       key={indexElement}
-                      className="animate-pulse rounded-xl border border-gray-200 dark:border-gray-800 bg-white/70 dark:bg-black/30 backdrop-blur p-6 h-[30rem] space-y-4"
+                      className="w-full sm:w-[32%] animate-none rounded-xl border hover:shadow-xl hover:shadow-black/25 dark:hover:shadow-white/25 bg-white/70 dark:bg-black/30 border-gray-200 dark:border-gray-800 backdrop-blur p-6 h-[30rem] flex flex-col gap-4 relative"
                     >
-                      <div className="h-6 bg-gray-300 dark:bg-neutral-700 rounded w-3/4 mx-auto" />
-                      <div className="h-4 bg-gray-200 dark:bg-neutral-800 rounded w-5/6 mx-auto" />
-                      <div className="h-36 bg-gray-300 dark:bg-neutral-700 rounded-xl w-full mt-4" />
+                      <Skeleton className="h-6 w-3/4 mx-auto" />
+                      <Skeleton className="h-4 w-5/6 mx-auto" />
+                      <Skeleton className="h-36 w-full rounded-xl mt-4" />
+
                       <div className="flex justify-center gap-2 my-6">
                         {Array.from({ length: 4 }).map((_, indexIcon) => (
-                          <div
+                          <Skeleton
                             key={indexIcon}
-                            className="h-8 w-8 bg-gray-200 dark:bg-neutral-800 rounded-full"
+                            className="h-8 w-8 rounded-full"
                           />
                         ))}
                       </div>
+
                       <div className="absolute bottom-6 left-0 w-full px-4">
-                        <div className="h-8 bg-gray-800 dark:bg-white rounded-xl w-full" />
+                        <Skeleton className="h-8 w-full rounded-xl" />
                       </div>
                     </div>
                   ))
@@ -129,9 +132,10 @@ export default function ProjectSection() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -30 }}
                       transition={{ duration: 0.5, ease: "easeInOut" }}
+                      className="w-full sm:w-[32%]"
                     >
                       <CardContainer containerClassName="p-0 inter-var">
-                        <CardBody className="transition duration-500 relative group/card dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] bg-white/70 dark:bg-black/30 border-gray-200 dark:border-gray-800 w-full rounded-xl p-6 h-[30rem] border backdrop-blur">
+                        <CardBody className="transition duration-300 relative group/card hover:shadow-xl hover:shadow-black/25 dark:hover:shadow-white/25 bg-white/70 dark:bg-black/30 border-gray-200 dark:border-gray-800 w-full rounded-xl p-6 h-[30rem] border backdrop-blur">
                           <CardItem
                             translateZ="50"
                             className="text-center w-full"
@@ -169,7 +173,7 @@ export default function ProjectSection() {
                             className="w-full absolute bottom-6 left-0 px-6"
                           >
                             <Button
-                              className="rounded-full gap-2 w-full bg-black dark:bg-white dark:text-black"
+                              className="rounded-full gap-2 w-full bg-black transition duration-300 dark:bg-white dark:text-black"
                               onClick={() => window.open(project.url, "_blank")}
                             >
                               <ArrowUp className="text-white dark:text-black" />

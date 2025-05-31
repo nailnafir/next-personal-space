@@ -62,7 +62,7 @@ export function PreLoader() {
             initial={{ width: 0 }}
             animate={{ width: "100%" }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="h-1 bg-gradient-to-r from-violet-500 via-yellow-500 to-violet-500 rounded-full"
+            className="h-1 bg-gradient-to-r from-purple-500 via-yellow-500 to-purple-500 rounded-full"
           />
 
           <motion.p

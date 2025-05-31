@@ -21,7 +21,7 @@ export function ThemeToggle() {
       variant="default"
       size="icon"
       onClick={() => setTheme((prev) => (prev === "dark" ? "light" : "dark"))}
-      className="rounded-full border-2 dark:bg-white dark:hover:bg-white bg-black hover:bg-black"
+      className="rounded-full border-2 transition duration-300 dark:bg-white dark:hover:bg-white bg-black hover:bg-black"
     >
       <motion.div
         initial={{ rotate: 0 }}

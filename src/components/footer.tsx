@@ -16,7 +16,7 @@ export default function Footer() {
   };
 
   return (
-    <footer className="py-12 z-50 backdrop-blur border-t dark:border-gray-800 dark:text-gray-400 border-gray-200 text-gray-600">
+    <footer className="py-12 z-50 backdrop-blur border-t transition duration-300 bg-white/70 dark:bg-black/30 dark:border-gray-800 dark:text-gray-400 border-gray-200 text-gray-600">
       <div className="max-w-full mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 sm:px-32 px-4">
           {/* Me */}
@@ -83,13 +83,13 @@ export default function Footer() {
               <Input
                 type="email"
                 placeholder="Email kamu"
-                className="bg-transparent dark:border-gray-700 dark:text-white border-gray-300 text-black"
+                className="dark:border-gray-700 dark:text-white border-gray-300 text-black"
               />
               <Button
                 size="sm"
-                className="dark:bg-white dark:text-black dark:hover:bg-white/90 bg-black text-white hover:bg-black/90"
+                className="transition duration-300 dark:bg-white dark:text-black dark:hover:bg-white/90 bg-black text-white hover:bg-black/90"
               >
-                <Send className="w-4 h-4" />
+                <Send className="text-white dark:text-black " />
                 <span className="sr-only">Daftar</span>
               </Button>
             </div>

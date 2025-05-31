@@ -1,7 +1,7 @@
 import { motion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShineBorder } from "@/components/magicui/shine-border";
-import { LinkPreview } from "@/components/ui/link-preview";
+import { LinkPreview } from "@/components/aceternity/link-preview";
 import { skills } from "@/lib/data/skills";
 
 export default function SkillSection() {
@@ -18,7 +18,7 @@ export default function SkillSection() {
           viewport={{ once: false }}
           className="flex justify-center"
         >
-          <div className="p-8 justify-center rounded-xl border-1 w-full bg-white/50 dark:bg-black/50 backdrop-blur border-gray-200 dark:border-gray-800 text-black dark:text-white">
+          <div className="p-8 justify-center rounded-xl border-1 w-full transition duration-300 bg-white/50 dark:bg-black/50 shadow-xl shadow-black/10 dark:shadow-white/10 backdrop-blur border-gray-200 dark:border-gray-800 text-black dark:text-white">
             <h3 className="text-3xl font-bold">
               &quot;Keinginan: Pro Gamer, Kenyataan: Programmer&quot;
             </h3>
@@ -72,7 +72,10 @@ export default function SkillSection() {
             <div className="flex flex-wrap gap-4 mt-8 justify-center">
               {skills.map((skill, index) => (
                 <LinkPreview key={index} url={skill.url}>
-                  <Card className="relative bg-white dark:bg-black hover:bg-black/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out">
+                  <Card
+                    data-cursor-target
+                    className="relative bg-white dark:bg-black hover:bg-black/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out"
+                  >
                     <ShineBorder
                       shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
                     />

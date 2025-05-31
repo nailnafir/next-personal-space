@@ -21,7 +21,7 @@ export default function InfoSection() {
           viewport={{ once: false }}
           className="flex justify-center"
         >
-          <BackgroundGradient className="rounded-3xl max-w-sm p-2 bg-white dark:bg-black">
+          <BackgroundGradient className="rounded-3xl max-w-sm p-2 transition duration-300 bg-white dark:bg-black">
             <Image
               src="https://firebasestorage.googleapis.com/v0/b/nailnafir-personal-space.appspot.com/o/images%2Fme.png?alt=media&token=73c44a5d-424c-4318-99ad-5a5ad6055811"
               width={150}
@@ -57,6 +57,7 @@ export default function InfoSection() {
           {infos.map((info, index) => (
             <Card
               key={index}
+              data-cursor-target
               className="relative bg-white dark:bg-black hover:bg-black/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out backdrop-blur"
             >
               <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
@@ -86,7 +87,7 @@ export default function InfoSection() {
           <Button
             variant="default"
             onClick={() => window.open("https://t.me/nailnafir", "_blank")}
-            className="animate-border-pulse gap-2 rounded-full dark:bg-white dark:hover:bg-white bg-black hover:bg-black px-4 py-2"
+            className="animate-border-pulse gap-2 rounded-full transition duration-300 dark:bg-white dark:hover:bg-white bg-black hover:bg-black px-4 py-2"
           >
             <MessageSquare className="text-white dark:text-black" />
             <span className="text-sm text-white dark:text-black font-semibold">

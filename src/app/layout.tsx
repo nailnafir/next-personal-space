@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Rubik } from "next/font/google";
 import { PreLoader } from "@/components/pre-loader";
-import { CircleCursor } from "@/components/circle-cursor";
+import { CrosshairCursor } from "@/components/crosshair-cursor";
 import { ThemeProvider } from "@/components/theme-provider";
 
 const rubik = Rubik({
@@ -30,7 +30,7 @@ export default function RootLayout({
           disableTransitionOnChange={false}
         >
           {children}
-          <CircleCursor />
+          <CrosshairCursor />
           <PreLoader />
         </ThemeProvider>
       </body>

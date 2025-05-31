@@ -2,7 +2,7 @@
 import * as HoverCardPrimitive from "@radix-ui/react-hover-card";
 
 import { encode } from "qss";
-import React from "react";
+import { MouseEvent, useEffect, useState } from "react";
 import {
   AnimatePresence,
   motion,
@@ -11,6 +11,8 @@ import {
 } from "motion/react";
 
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import Link from "next/link";
 
 type LinkPreviewProps = {
   children: React.ReactNode;
@@ -18,8 +20,6 @@ type LinkPreviewProps = {
   className?: string;
   width?: number;
   height?: number;
-  quality?: number;
-  layout?: string;
 } & (
   | { isStatic: true; imageSrc: string }
   | { isStatic?: false; imageSrc?: never }
@@ -31,8 +31,6 @@ export const LinkPreview = ({
   className,
   width = 200,
   height = 125,
-  quality = 50,
-  layout = "fixed",
   isStatic = false,
   imageSrc = "",
 }: LinkPreviewProps) => {
@@ -54,11 +52,11 @@ export const LinkPreview = ({
     src = imageSrc;
   }
 
-  const [isOpen, setOpen] = React.useState(false);
+  const [isOpen, setOpen] = useState(false);
 
-  const [isMounted, setIsMounted] = React.useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setIsMounted(true);
   }, []);
 
@@ -67,10 +65,11 @@ export const LinkPreview = ({
 
   const translateX = useSpring(x, springConfig);
 
-  const handleMouseMove = (event: any) => {
-    const targetRect = event.target.getBoundingClientRect();
+  const handleMouseMove = (event: MouseEvent<HTMLAnchorElement>) => {
+    const target = event.target as HTMLAnchorElement;
+    const targetRect = target.getBoundingClientRect();
     const eventOffsetX = event.clientX - targetRect.left;
-    const offsetFromCenter = (eventOffsetX - targetRect.width / 2) / 2; // Reduce the effect to make it subtle
+    const offsetFromCenter = (eventOffsetX - targetRect.width / 2) / 2;
     x.set(offsetFromCenter);
   };
 
@@ -78,12 +77,7 @@ export const LinkPreview = ({
     <>
       {isMounted ? (
         <div className="hidden">
-          <img
-            src={src}
-            width={width}
-            height={height}
-            alt="hidden image"
-          />
+          <Image src={src} width={width} height={height} alt="hidden image" />
         </div>
       ) : null}
 
@@ -128,19 +122,19 @@ export const LinkPreview = ({
                   x: translateX,
                 }}
               >
-                <a
+                <Link
                   href={url}
                   className="block p-1 bg-white border-2 border-transparent shadow rounded-xl hover:border-neutral-200 dark:hover:border-neutral-800"
                   style={{ fontSize: 0 }}
                 >
-                  <img
+                  <Image
                     src={isStatic ? imageSrc : src}
                     width={width}
                     height={height}
                     className="rounded-lg"
                     alt="preview image"
                   />
-                </a>
+                </Link>
               </motion.div>
             )}
           </AnimatePresence>

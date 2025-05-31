@@ -2,7 +2,7 @@ import { motion } from "motion/react";
 import { socials } from "@/lib/data/socials";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShineBorder } from "@/components/magicui/shine-border";
-import { LinkPreview } from "@/components/ui/link-preview";
+import { LinkPreview } from "@/components/aceternity/link-preview";
 
 export default function AboutSection() {
   return (
@@ -18,7 +18,7 @@ export default function AboutSection() {
           viewport={{ once: false }}
           className="flex justify-center"
         >
-          <div className="p-8 justify-center rounded-xl border-1 w-full bg-white/50 dark:bg-black/50 backdrop-blur border-gray-200 dark:border-gray-800 text-black dark:text-white">
+          <div className="p-8 justify-center rounded-xl border-1 w-full transition duration-300 shadow-xl shadow-black/10 dark:shadow-white/10 bg-white/50 dark:bg-black/50 backdrop-blur border-gray-200 dark:border-gray-800 text-black dark:text-white">
             <h3 className="text-3xl font-bold">
               &quot;Tak Kenal, Maka Tak Sayang&quot;
             </h3>
@@ -52,6 +52,7 @@ export default function AboutSection() {
               {socials.map((social, index) => (
                 <LinkPreview key={index} url={social.url}>
                   <Card
+                    data-cursor-target
                     key={index}
                     className="relative bg-white dark:bg-black hover:bg-black/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out"
                   >
