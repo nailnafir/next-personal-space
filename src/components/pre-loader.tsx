@@ -32,7 +32,7 @@ export function PreLoader() {
       animate={{ opacity: 0 }}
       transition={{ duration: 0.5, ease: "easeInOut", delay: 1.5 }}
       onAnimationComplete={() => setIsLoading(false)}
-      className="fixed inset-0 z-50 flex items-center justify-center dark:bg-black bg-white p-4 sm:p-6 lg:p-8"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background sm:p-6 lg:p-8"
     >
       <div className="relative">
         <motion.div
@@ -44,16 +44,15 @@ export function PreLoader() {
           <motion.div
             animate={{
               scale: [1, 1.5, 1],
-              rotate: [0, 5, 0, -5, 0],
             }}
             transition={{
-              duration: 1.5,
-              repeat: Number.POSITIVE_INFINITY,
+              duration: 1,
+              repeat: Infinity,
               ease: "easeInOut",
             }}
             className="flex items-center gap-1 sm:gap-2"
           >
-            <span className="text-4xl sm:text-5xl lg:text-6xl font-semibold bg-black dark:bg-white text-white dark:text-black px-3 sm:px-4">
+            <span className="px-3 text-4xl font-semibold text-background sm:text-5xl lg:text-6xl bg-foreground sm:px-4">
               NAILNAFIR
             </span>
           </motion.div>
@@ -62,17 +61,8 @@ export function PreLoader() {
             initial={{ width: 0 }}
             animate={{ width: "100%" }}
             transition={{ duration: 1.5, ease: "easeInOut" }}
-            className="h-1 bg-gradient-to-r from-purple-500 via-yellow-500 to-purple-500 rounded-full"
+            className="h-1 rounded-full bg-gradient-to-r from-purple-500 via-yellow-500 to-purple-500"
           />
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="text-black dark:text-white text-sm sm:text-base text-center italic"
-          >
-            &quot;Personal Space for Nailul Firdaus&quot;
-          </motion.p>
         </motion.div>
       </div>
     </motion.div>

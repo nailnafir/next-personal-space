@@ -8,9 +8,11 @@ const nextConfig: NextConfig = {
         hostname: "firebasestorage.googleapis.com",
         pathname: "/v0/b/**",
       },
-    ],
-    domains: [
-      "api.microlink.io",
+      {
+        protocol: "https",
+        hostname: "api.microlink.io",
+        pathname: "/**",
+      },
     ],
   },
 };

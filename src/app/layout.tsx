@@ -4,6 +4,7 @@ import { Rubik } from "next/font/google";
 import { PreLoader } from "@/components/pre-loader";
 import { CrosshairCursor } from "@/components/crosshair-cursor";
 import { ThemeProvider } from "@/components/theme-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const rubik = Rubik({
   subsets: ["latin"],
@@ -32,6 +33,7 @@ export default function RootLayout({
           {children}
           <CrosshairCursor />
           <PreLoader />
+          <Toaster richColors position="top-center" />
         </ThemeProvider>
       </body>
     </html>

@@ -1,11 +1,15 @@
 "use client";
 
+import { useMobile } from "@/hooks/use-mobile";
 import { useEffect, useRef, useState } from "react";
 
 export function CrosshairCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
+
   const [hoverTarget, setHoverTarget] = useState<DOMRect | null>(null);
+
+  const isMobile = useMobile();
 
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
@@ -49,29 +53,31 @@ export function CrosshairCursor() {
     };
   }, [hoverTarget]);
 
+  if (isMobile) return;
+
   return (
     <>
       <div
         ref={cursorRef}
-        className="fixed z-[9998] pointer-events-none"
+        className="fixed z-[999] pointer-events-none"
         style={{
           transformOrigin: "center",
           willChange: "transform, width, height",
         }}
       >
-        <div className="absolute top-0 left-0 w-2 h-[2px] bg-black dark:bg-white" />
-        <div className="absolute top-0 right-0 w-2 h-[2px] bg-black dark:bg-white" />
-        <div className="absolute bottom-0 left-0 w-2 h-[2px] bg-black dark:bg-white" />
-        <div className="absolute bottom-0 right-0 w-2 h-[2px] bg-black dark:bg-white" />
-        <div className="absolute top-0 left-0 w-[2px] h-2 bg-black dark:bg-white" />
-        <div className="absolute top-0 right-0 w-[2px] h-2 bg-black dark:bg-white" />
-        <div className="absolute bottom-0 left-0 w-[2px] h-2 bg-black dark:bg-white" />
-        <div className="absolute bottom-0 right-0 w-[2px] h-2 bg-black dark:bg-white" />
+        <div className="absolute top-0 left-0 w-2 h-[2px] bg-foreground" />
+        <div className="absolute top-0 right-0 w-2 h-[2px] bg-foreground" />
+        <div className="absolute bottom-0 left-0 w-2 h-[2px] bg-foreground" />
+        <div className="absolute bottom-0 right-0 w-2 h-[2px] bg-foreground" />
+        <div className="absolute top-0 left-0 w-[2px] h-2 bg-foreground" />
+        <div className="absolute top-0 right-0 w-[2px] h-2 bg-foreground" />
+        <div className="absolute bottom-0 left-0 w-[2px] h-2 bg-foreground" />
+        <div className="absolute bottom-0 right-0 w-[2px] h-2 bg-foreground" />
       </div>
 
       <div
         ref={dotRef}
-        className="fixed z-[9999] w-[4px] h-[4px] rounded-full bg-black dark:bg-white pointer-events-none"
+        className="fixed z-[9999] w-[4px] h-[4px] rounded-full bg-foreground pointer-events-none"
         style={{
           transform: "translate(-50%, -50%)",
         }}

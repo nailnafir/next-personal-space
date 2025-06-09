@@ -8,9 +8,9 @@ export default function AboutSection() {
   return (
     <section
       id="tentang"
-      className="h-dvh flex flex-col items-center justify-center sm:px-32 px-4 py-4 sm:py-8"
+      className="flex flex-col items-center justify-center px-8 py-8 sm:h-dvh"
     >
-      <div className="text-center max-w-full sm:max-w-6xl w-full mx-auto space-y-4 sm:space-y-8 mt-8">
+      <div className="w-full max-w-full mx-auto mt-8 space-y-4 text-center sm:max-w-6xl sm:space-y-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -18,43 +18,46 @@ export default function AboutSection() {
           viewport={{ once: false }}
           className="flex justify-center"
         >
-          <div className="p-8 justify-center rounded-xl border-1 w-full transition duration-300 shadow-xl shadow-black/10 dark:shadow-white/10 bg-white/50 dark:bg-black/50 backdrop-blur border-gray-200 dark:border-gray-800 text-black dark:text-white">
-            <h3 className="text-3xl font-bold">
+          <div className="justify-center w-full p-8 transition-all duration-300 bg-transparent shadow-xl text-foreground border-ring/50 shadow-background/5 rounded-xl border-1 backdrop-blur">
+            <h3 className="text-3xl font-bold text-foreground">
               &quot;Tak Kenal, Maka Tak Sayang&quot;
             </h3>
-            <p className="mt-8 text-base text-gray-600 dark:text-gray-400">
+            <p className="mt-8 text-base text-muted-foreground">
               Seorang{" "}
-              <span className="italic underline font-semibold">developer</span>{" "}
+              <span className="italic font-semibold underline">developer</span>{" "}
               kreatif dan penasaran akut yang fokus di{" "}
-              <span className="italic underline font-semibold">
+              <span className="italic font-semibold underline">
                 Mobile & Web Development
               </span>
               , tapi gak pernah puas di zona nyaman. Suka banget ngulik
               teknologi baru, apalagi kalo soal{" "}
-              <span className="italic underline font-semibold">Software</span>,{" "}
-              <span className="italic underline font-semibold">
+              <span className="italic font-semibold underline">Software</span>,{" "}
+              <span className="italic font-semibold underline">
                 IT Security
               </span>
               ,{" "}
-              <span className="italic underline font-semibold">Blockchain</span>
+              <span className="italic font-semibold underline">Blockchain</span>
               , dan{" "}
-              <span className="italic underline font-semibold">
+              <span className="italic font-semibold underline">
                 Artificial Intelligence
               </span>
               . Dunia teknologi itu cepet banget geraknya. Kalo males belajar
               bakal ketinggalan, kalo rajin ngulik bakal jadi{" "}
-              <span className="italic underline font-semibold">
+              <span className="italic font-semibold underline">
                 game changer
               </span>
               .
             </p>
-            <div className="flex flex-wrap gap-4 mt-8 justify-center">
+            <div className="flex flex-wrap justify-center gap-4 mt-8">
               {socials.map((social, index) => (
-                <LinkPreview key={index} url={social.url}>
+                <LinkPreview
+                  key={index}
+                  url={social.url}
+                >
                   <Card
                     data-cursor-target
                     key={index}
-                    className="relative bg-white dark:bg-black hover:bg-black/5 hover:dark:bg-white/5 transition-all duration-300 ease-in-out"
+                    className="relative items-center transition-all duration-300 ease-in-out bg-transparent hover:bg-foreground/10 backdrop-blur"
                   >
                     <ShineBorder
                       shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]}

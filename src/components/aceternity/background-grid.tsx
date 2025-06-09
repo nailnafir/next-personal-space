@@ -6,7 +6,7 @@ export default function BackgroundGrid({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center bg-white dark:bg-black">
+    <div className="relative flex items-center justify-center w-full min-h-screen bg-white dark:bg-black">
       <div
         className={cn(
           "absolute inset-0 z-0",
