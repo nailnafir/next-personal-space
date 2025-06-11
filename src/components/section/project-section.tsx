@@ -12,7 +12,7 @@ import {
   CardContainer,
   CardItem,
 } from "@/components/aceternity/three-dimension-card";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -21,6 +21,7 @@ export default function ProjectSection() {
     data: projects,
     error,
     isLoading,
+    mutate,
   } = useSWR("projects", getProjects, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
@@ -58,22 +59,26 @@ export default function ProjectSection() {
   }, [filter]);
 
   const handleRetry = async () => {
+    const toastId = "retry-toast";
+
     try {
-      toast.loading("Tunggu Sebentar", {
-        id: "retry-toast",
-        description: "Lagi coba hubungin ke server dulu",
+      toast.loading("Menghubungkan", {
+        id: toastId,
+        description: "Tunggu sebentar, lagi coba hubungin ke server dulu",
       });
 
-      await mutate("projects", getProjects());
+      await mutate();
 
       toast.success("Berhasil", {
-        id: "retry-toast",
+        id: toastId,
         description: "Udah terhubung ke server, data udah tampil!",
       });
     } catch (error) {
       toast.error("Kesalahan", {
-        id: "retry-toast",
-        description: `Servernya gak mau terhubung: ${error}`,
+        id: toastId,
+        description: `Servernya gak mau terhubung, ada masalah: ${
+          error instanceof Error ? error.message : "Masalah tidak diketahui"
+        }`,
       });
     }
   };
