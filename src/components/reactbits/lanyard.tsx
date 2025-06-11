@@ -139,7 +139,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, length = 1 }: BandProps) {
     return false;
   });
 
-  const finalLength = isSmall ? length - 0.15 : length - 0.01;
+  const finalLength = length * 0.8;
 
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], finalLength]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], finalLength]);

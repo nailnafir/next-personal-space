@@ -8,7 +8,7 @@ export default function SkillSection() {
   return (
     <section
       id="keahlian"
-      className="flex flex-col items-center justify-center px-8 py-8 sm:h-dvh"
+      className="flex flex-col items-center justify-center px-4 py-4 sm:h-dvh"
     >
       <div className="w-full max-w-full mx-auto mt-8 space-y-4 text-center sm:max-w-6xl sm:space-y-8">
         <motion.div

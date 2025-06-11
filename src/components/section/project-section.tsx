@@ -1,5 +1,3 @@
-"use client";
-
 import { toast } from "sonner";
 import { useEffect, useState, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -83,7 +81,7 @@ export default function ProjectSection() {
   return (
     <section
       id="karya"
-      className="flex flex-col items-center justify-center px-8 py-8"
+      className="flex flex-col items-center justify-center px-4 py-4"
     >
       <div className="w-full max-w-full mx-auto mt-8 space-y-4 text-center sm:max-w-6xl sm:space-y-8">
         <motion.div

@@ -1,9 +1,10 @@
+import Link from "next/link";
 import { Brain, Code2, Coffee, Heart, Send } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { socials } from "@/lib/data/socials";
 import { menus } from "@/lib/data/menus";
-import Link from "next/link";
+import { interests } from "@/lib/data/interests";
 
 export default function Footer() {
   const getCopyrightYear = () => {
@@ -22,18 +23,19 @@ export default function Footer() {
           {/* Me */}
           <div className="space-y-4">
             <Link href="/">
-              <span className="flex flex-row items-center gap-1 text-foreground">
+              <span className="flex flex-row items-center gap-1 p-1 text-foreground">
                 <Code2 className="w-8 h-8" />
                 <span className="text-xl font-bold">NAILNAFIR</span>
               </span>
             </Link>
-            <p className="text-sm text-foreground">Sosial Media</p>
-            <div className="flex space-x-4">
+            <p className="p-1 text-sm text-foreground">Sosial Media</p>
+            <div className="flex space-x-2">
               {socials.map((social, index) => (
                 <Link
+                  data-cursor-target
                   key={index}
                   href={social.url || "#"}
-                  className="transition-colors text-muted-foreground/75 hover:text-foreground"
+                  className="p-1 transition-colors text-muted-foreground/75 hover:text-foreground"
                 >
                   <social.icon className="w-4 h-4" />
                   <span className="sr-only">{social.title}</span>
@@ -44,13 +46,14 @@ export default function Footer() {
 
           {/* Menu */}
           <div>
-            <h3 className="mb-4 font-semibold">Menu</h3>
+            <h3 className="p-1 mb-4 font-semibold">Menu</h3>
             <ul className="space-y-2 text-sm">
               {menus.map((menu, index) => (
                 <li key={index}>
                   <Link
+                    data-cursor-target
                     href={`#${menu.title.toLowerCase()}`}
-                    className="transition-colors text-muted-foreground/75 hover:text-foreground"
+                    className="p-1 transition-colors text-muted-foreground/75 hover:text-foreground"
                   >
                     {menu.title}
                   </Link>
@@ -59,24 +62,21 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Interest */}
           <div>
-            <h3 className="mb-4 font-semibold">Minat</h3>
+            <h3 className="p-1 mb-4 font-semibold">Minat</h3>
             <ul className="space-y-2 text-sm">
-              <li className="text-muted-foreground/75 hover:text-foreground">
-                Design
-              </li>
-              <li className="text-muted-foreground/75 hover:text-foreground">
-                Website Development
-              </li>
-              <li className="text-muted-foreground/75 hover:text-foreground">
-                Mobile Development
-              </li>
-              <li className="text-muted-foreground/75 hover:text-foreground">
-                Big Data
-              </li>
-              <li className="text-muted-foreground/75 hover:text-foreground">
-                Blockchain
-              </li>
+              {interests.map((interest, index) => (
+                <li key={index}>
+                  <Link
+                    data-cursor-target
+                    href=""
+                    className="p-1 transition-colors text-muted-foreground/75 hover:text-foreground"
+                  >
+                    {interest}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

@@ -10,14 +10,17 @@ import TypeWriter from "@/components/type-writer";
 
 export default function InfoSection() {
   return (
-    <section className="sm:h-[calc(100dvh-64px)] flex flex-col items-center px-8 py-8">
+    <section
+      id="info"
+      className="h-[calc(100dvh-64px)] justify-end flex flex-col items-center px-4 py-4"
+    >
       <div className="w-full max-w-full mx-auto text-center sm:max-w-6xl">
         <motion.h1
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeInOut" }}
           viewport={{ once: false }}
-          className="text-3xl font-bold tracking-tight sm:mt-[660px] mt-[340px] sm:text-5xl md:text-6xl lg:text-7xl"
+          className="text-3xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl"
         >
           <span className="block font-bold">
             <AnimatedGradientText>Nailul Firdaus</AnimatedGradientText>
@@ -27,13 +30,13 @@ export default function InfoSection() {
           </span>
         </motion.h1>
       </div>
-      <div className="w-full max-w-full mx-auto text-center sm:max-w-6xl">
+      <div className="w-full max-w-full mx-auto text-center sm:max-w-80">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: "easeInOut" }}
           viewport={{ once: false }}
-          className="grid justify-center grid-cols-3 gap-4 mt-2 sm:mt-8"
+          className="grid items-center justify-center grid-cols-3 gap-4 mt-2"
         >
           {infos.map((info, index) => (
             <Card
@@ -42,9 +45,6 @@ export default function InfoSection() {
             >
               <ShineBorder shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]} />
               <CardContent>
-                <div className="items-center justify-center hidden p-4 mb-6 rounded-full sm:flex bg-foreground/10">
-                  <info.icon />
-                </div>
                 <NumberTicker
                   value={info.count}
                   className="text-3xl font-bold"
