@@ -3,6 +3,8 @@ import { socials } from "@/lib/data/socials";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import { LinkPreview } from "@/components/aceternity/link-preview";
+import { Button } from "@/components/ui/button";
+import { ArrowDown } from "lucide-react";
 
 export default function AboutSection() {
   return (
@@ -50,10 +52,7 @@ export default function AboutSection() {
             </p>
             <div className="flex flex-wrap justify-center gap-4 mt-8">
               {socials.map((social, index) => (
-                <LinkPreview
-                  key={index}
-                  url={social.url}
-                >
+                <LinkPreview key={index} url={social.url}>
                   <Card
                     data-cursor-target
                     key={index}
@@ -69,6 +68,16 @@ export default function AboutSection() {
                 </LinkPreview>
               ))}
             </div>
+            <Button
+              variant="default"
+              onClick={() => window.open("https://t.me/nailnafir", "_blank")}
+              className="w-full gap-2 px-4 py-2 mt-8 transition duration-300 rounded-full animate-border-pulse"
+            >
+              <ArrowDown className="text-background" />
+              <span className="text-sm font-semibold text-background">
+                Ngobrol, Yuk!
+              </span>
+            </Button>
           </div>
         </motion.div>
       </div>

@@ -6,14 +6,14 @@ import { motion } from "motion/react";
 import { menus } from "@/lib/data/menus";
 import { ThemeToggle } from "./theme-toggle";
 import { Button } from "./ui/button";
-import { MessageSquare, Menu, X, Code2 } from "lucide-react";
+import { Menu, X, Code2 } from "lucide-react";
 import { useMenu } from "@/hooks/use-menu";
 import { cn } from "@/lib/utils";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
 
-  const { activeMenu, handleMenuClick } = useMenu();
+  const {activeMenu, handleMenuClick} = useMenu();
 
   return (
     <header className="sticky top-0 z-50 items-center w-full transition duration-300 border-b shadow-xl border-ring/50 shadow-background/5 backdrop-blur bg-background/50">
@@ -36,65 +36,50 @@ export default function Header() {
 
           {/* DESKTOP MENU */}
           <div className="absolute items-center hidden space-x-4 -translate-x-1/2 -translate-y-1/2 md:flex left-1/2 top-1/2">
-            {menus.map((menu, index) => {
-              const isActive = activeMenu === menu.title.toLowerCase();
-              return (
-                <Button
-                  variant="ghost"
-                  data-cursor-target
-                  key={index}
-                  onClick={() => handleMenuClick(menu.title)}
-                  className={cn(
-                    "px-3 py-2 text-sm font-medium transition duration-300 rounded-xl relative",
-                    isActive
-                      ? "text-foreground bg-foreground/15"
-                      : "text-foreground/75 hover:text-foreground hover:bg-foreground/5"
-                  )}
-                >
-                  <span className="flex items-center gap-1">
-                    <menu.icon className="w-4 h-4" />
-                    {menu.title}
-                  </span>
+            {menus.map((menu, index) => (
+              <Button
+                variant="ghost"
+                data-cursor-target
+                key={index}
+                onClick={() => handleMenuClick(menu.title)}
+                className={cn(
+                  "px-3 py-2 text-sm font-medium transition duration-300 rounded-xl relative",
+                  activeMenu === menu.title.toLowerCase()
+                    ? "text-foreground bg-foreground/15"
+                    : "text-foreground/75 hover:text-foreground hover:bg-foreground/5"
+                )}
+              >
+                <span className="flex items-center gap-1">
+                  <menu.icon className="w-4 h-4" />
+                  {menu.title}
+                </span>
 
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeIndicator"
-                      className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full"
-                      initial={false}
-                      transition={{
-                        type: "spring",
-                        stiffness: 350,
-                        damping: 30,
-                      }}
-                    />
-                  )}
-                </Button>
-              );
-            })}
+                {activeMenu === menu.title.toLowerCase() && (
+                  <motion.div
+                    layoutId="activeIndicator"
+                    className="absolute bottom-0 left-0 right-0 h-0.5 bg-foreground rounded-full"
+                    initial={false}
+                    transition={{
+                      type: "spring",
+                      stiffness: 350,
+                      damping: 30,
+                    }}
+                  />
+                )}
+              </Button>
+            ))}
           </div>
 
           {/* Action */}
           <div className="flex items-center gap-2">
             <ThemeToggle />
-            <div className="hidden lg:flex">
-              <Button
-                variant="default"
-                onClick={() => window.open("https://t.me/nailnafir", "_blank")}
-                className="py-2 transition duration-300 rounded-full bg-foreground hover:bg-foreground/75"
-              >
-                <MessageSquare className="text-background" />
-                <span className="text-sm font-semibold text-background">
-                  Ngobrol, Yuk!
-                </span>
-              </Button>
-            </div>
 
             {/* Mobile Menu Trigger */}
             <Button
               variant="default"
               size="icon"
               onClick={() => setOpen(!open)}
-              className="p-2 transition duration-300 border-2 rounded-full bg-foreground hover:bg-background md:hidden text-foreground"
+              className="transition duration-300 border-2 rounded-full bg-foreground hover:bg-foreground/75 sm:hidden"
             >
               <motion.div
                 initial={{ rotate: 0 }}
@@ -108,6 +93,7 @@ export default function Header() {
                   <Menu className="w-4 h-4 text-background" />
                 )}
               </motion.div>
+              <span className="sr-only">Menu Mobile</span>
             </Button>
           </div>
         </div>
@@ -119,27 +105,27 @@ export default function Header() {
             animate={{ opacity: 1, y: 0 }}
             className="absolute left-0 flex flex-col w-full px-4 py-4 space-y-2 transition duration-300 border-b border-ring/50 md:hidden bg-background/85 backdrop-blur"
           >
-            {menus.map((menu, index) => {
-              const isActive = activeMenu === menu.title.toLowerCase();
-              return (
-                <Button
-                  variant="ghost"
-                  key={index}
-                  onClick={() => handleMenuClick(menu.title)}
-                  className={cn(
-                    "px-4 py-2 text-sm font-medium rounded-md text-left",
-                    isActive
-                      ? "text-foreground bg-foreground/15"
-                      : "text-foreground/75 hover:text-foreground hover:bg-foreground/5"
-                  )}
-                >
-                  <span className="flex items-center gap-2">
-                    <menu.icon className="w-4 h-4" />
-                    {menu.title}
-                  </span>
-                </Button>
-              );
-            })}
+            {menus.map((menu, index) => (
+              <Button
+                variant="ghost"
+                key={index}
+                onClick={() => {
+                  handleMenuClick(menu.title);
+                  setOpen(!open);
+                }}
+                className={cn(
+                  "px-4 py-2 text-sm font-medium rounded-md text-left",
+                  activeMenu === menu.title.toLowerCase()
+                    ? "text-foreground bg-foreground/15"
+                    : "text-foreground/75 hover:text-foreground hover:bg-foreground/5"
+                )}
+              >
+                <span className="flex items-center gap-2">
+                  <menu.icon className="w-4 h-4" />
+                  {menu.title}
+                </span>
+              </Button>
+            ))}
           </motion.div>
         )}
       </div>

@@ -43,7 +43,7 @@ export default function Lanyard({
   bandLength = 1,
 }: LanyardProps) {
   return (
-    <div className="relative z-50 flex items-center justify-center w-full h-screen origin-center transform scale-100">
+    <div className="relative z-10 flex items-center justify-center w-full h-screen origin-center transform scale-100">
       <Canvas
         camera={{ position, fov }}
         gl={{ alpha: transparent }}
@@ -166,13 +166,6 @@ function Band({ maxSpeed = 50, minSpeed = 0, length = 1 }: BandProps) {
       };
     }
   }, [hovered, dragged]);
-
-  useEffect(() => {
-    document.body.style.touchAction = isSmall && dragged ? "none" : "";
-    return () => {
-      document.body.style.touchAction = "";
-    };
-  }, [isSmall, dragged]);
 
   useFrame((state, delta) => {
     if (dragged && typeof dragged !== "boolean") {

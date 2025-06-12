@@ -1,14 +1,53 @@
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
+import { useMenu } from "@/hooks/use-menu";
+import { useMobile } from "@/hooks/use-mobile";
 import { Button } from "@/components/ui/button";
 import { AnimatedGradientText } from "@/components/magicui/animated-gradient-text";
 import { NumberTicker } from "@/components/magicui/number-ticker";
 import { infos, jobs } from "@/lib/data/infos";
-import { MessageSquare } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import TypeWriter from "@/components/type-writer";
+import { cn } from "@/lib/utils";
 
 export default function InfoSection() {
+  const isMobile = useMobile();
+
+  const {handleMenuClick} = useMenu();
+  
+  const [scrollLocked, setScrollLocked] = useState(true);
+
+  useEffect(() => {
+    if (!isMobile) return;
+
+    const handleScroll = () => {
+      const info = document.getElementById("info");
+      const bottom = info?.getBoundingClientRect().bottom || 0;
+      
+      setScrollLocked(bottom > window.innerHeight);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, [isMobile]);
+
+  useEffect(() => {
+    if (isMobile && scrollLocked) {
+      document.body.style.touchAction = "none";
+    } else {
+      document.body.style.touchAction = "";
+    }
+
+    return () => {
+      document.body.style.touchAction = "";
+    };
+  }, [isMobile, scrollLocked]);
+
   return (
     <section
       id="info"
@@ -55,6 +94,7 @@ export default function InfoSection() {
           ))}
         </motion.div>
       </div>
+
       <div className="w-full max-w-full mx-auto text-center sm:max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -65,12 +105,17 @@ export default function InfoSection() {
         >
           <Button
             variant="default"
-            onClick={() => window.open("https://t.me/nailnafir", "_blank")}
-            className="gap-2 px-4 py-2 transition duration-300 rounded-full animate-border-pulse bg-foreground hover:bg-foreground/75"
+            onClick={() => {
+              handleMenuClick("tentang");
+            }}
+            className={cn(
+              "z-50 gap-2 px-4 py-2 transition duration-300 rounded-full",
+              scrollLocked && "animate-bounce"
+            )}
           >
-            <MessageSquare className="text-background" />
+            <ArrowDown className="text-background" />
             <span className="text-sm font-semibold text-background">
-              Ngobrol, Yuk!
+              Selengkapnya
             </span>
           </Button>
         </motion.div>
