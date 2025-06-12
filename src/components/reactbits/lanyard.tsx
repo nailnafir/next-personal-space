@@ -43,7 +43,10 @@ export default function Lanyard({
   bandLength = 1,
 }: LanyardProps) {
   return (
-    <div className="relative z-10 flex items-center justify-center w-full h-screen origin-center transform scale-100">
+    <div
+      id="canvas"
+      className="relative flex items-center justify-center w-full h-screen origin-center transform scale-100"
+    >
       <Canvas
         camera={{ position, fov }}
         gl={{ alpha: transparent }}
@@ -139,7 +142,7 @@ function Band({ maxSpeed = 50, minSpeed = 0, length = 1 }: BandProps) {
     return false;
   });
 
-  const finalLength = length * 0.8;
+  const finalLength = length * (isSmall ? 0.7 : 0.8);
 
   useRopeJoint(fixed, j1, [[0, 0, 0], [0, 0, 0], finalLength]);
   useRopeJoint(j1, j2, [[0, 0, 0], [0, 0, 0], finalLength]);
@@ -166,6 +169,15 @@ function Band({ maxSpeed = 50, minSpeed = 0, length = 1 }: BandProps) {
       };
     }
   }, [hovered, dragged]);
+
+  useEffect(() => {
+    const canvas = document.getElementById("canvas");
+    if (canvas) canvas.style.zIndex = dragged ? "50" : "0";
+
+    return () => {
+      if (canvas) canvas.style.zIndex = "0";
+    };
+  }, [dragged]);
 
   useFrame((state, delta) => {
     if (dragged && typeof dragged !== "boolean") {

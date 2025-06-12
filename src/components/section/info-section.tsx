@@ -109,7 +109,7 @@ export default function InfoSection() {
               handleMenuClick("tentang");
             }}
             className={cn(
-              "z-50 gap-2 px-4 py-2 transition duration-300 rounded-full",
+              "gap-2 px-4 py-2 transition duration-300 rounded-full",
               scrollLocked && "animate-bounce"
             )}
           >
