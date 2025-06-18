@@ -45,7 +45,7 @@ export type SocialItemModel = {
 export type ToolItemModel = {
   name: string;
   url?: string | null;
-  iconUrl?: string;
+  iconUrl?: string | null;
 };
 
 export type WorkItemModel = {
