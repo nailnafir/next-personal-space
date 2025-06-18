@@ -48,7 +48,7 @@ export default function TypeWriter({ sentences }: TypewriterProps) {
   return (
     <>
       {text}
-      <span className="animate-pulse font-extrabold text-yellow-500">|</span>
+      <span className="font-extrabold text-yellow-500 animate-pulse">|</span>
     </>
   );
 }

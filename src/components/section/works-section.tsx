@@ -1,9 +1,10 @@
 import { toast } from "sonner";
-import { useEffect, useState, useRef } from "react";
+import { WorksModel } from "@/types/models";
+import { fetchWorks } from "@/lib/client";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { AlertCircle, ArrowUp, CheckCircle, RefreshCcw } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { getProjects } from "@/lib/api/fetch-projects";
+import { AlertCircle, ArrowUp, ChevronDown, RefreshCcw } from "lucide-react";
+import { translateCategory, translateType } from "@/lib/utils";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -12,51 +13,71 @@ import {
   CardContainer,
   CardItem,
 } from "@/components/aceternity/three-dimension-card";
-import useSWR from "swr";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Image from "next/image";
 import Link from "next/link";
+import useSWR from "swr";
 
-export default function ProjectSection() {
+export default function WorksSection() {
   const {
-    data: projects,
+    data: works,
     error,
     isLoading,
     mutate,
-  } = useSWR("projects", getProjects, {
+  } = useSWR<WorksModel[]>("works", fetchWorks, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
 
-  const [filter, setFilter] = useState<"all" | string>("all");
-
   const isFirstRender = useRef(true);
 
-  const projectTypes = Array.from(
-    new Set(projects?.map((project) => project.type))
-  );
+  const [category, setCategory] = useState<"all" | string>("all");
+  const [type, setType] = useState<"all" | string>("all");
 
-  const filteredProjects = projects?.filter((project) =>
-    filter === "all" ? true : project.type === filter
-  );
+  const categories =
+    (works?.length || 0) > 0
+      ? [
+          "all",
+          ...Array.from(new Set(works?.map((work) => work.category.name))),
+        ]
+      : ["all"];
+
+  const types =
+    (works?.length || 0) > 0
+      ? ["all", ...Array.from(new Set(works?.map((work) => work.type.name)))]
+      : ["all"];
 
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      return;
     }
 
-    if (filter === "all") {
-      toast.info("Menampilkan semuanya");
-    } else {
-      toast.info(
-        `Hanya menampilkan: ${
-          filter
-            .split("-")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))[0]
-        }`
-      );
-    }
-  }, [filter]);
+    toast.info(
+      category === "all" && type === "all"
+        ? "Menampilkan semua karya"
+        : category !== "all" && type === "all"
+        ? `Menampilkan kategori: ${translateCategory(category)}`
+        : category === "all" && type !== "all"
+        ? `Menampilkan tipe: ${translateType(type)}`
+        : `Menampilkan kategori: ${translateCategory(
+            category
+          )} dan tipe: ${translateType(type)}`
+    );
+  }, [category, type]);
+
+  const filteredWorks = works?.filter((work) => {
+    const matchCategory = category === "all" || work.category.name === category;
+    const matchType = type === "all" || work.type.name === type;
+
+    return matchCategory && matchType;
+  });
 
   const handleRetry = async () => {
     const toastId = "retry-toast";
@@ -102,48 +123,61 @@ export default function ProjectSection() {
 
           {isLoading ? (
             <div className="flex flex-row justify-center gap-4 mb-6 overflow-auto">
-              {Array.from({ length: 3 }).map((_, indexElement) => (
+              {Array.from({ length: 2 }).map((_, indexElement) => (
                 <Skeleton
                   key={indexElement}
-                  className="h-10 rounded-full w-52"
+                  className="w-56 h-10 rounded-full"
                 />
               ))}
             </div>
           ) : (
             !error && (
               <div className="flex flex-row justify-center gap-4 mb-6 overflow-auto">
-                <Button
-                  variant={filter === "all" ? "default" : "outline"}
-                  onClick={() => setFilter("all")}
-                  className="text-sm font-bold transition duration-300 rounded-full border-1 border-ring/50 backdrop-blur"
-                >
-                  <CheckCircle
-                    className={cn("w-5 h-5", filter === "all" ? "" : "hidden")}
-                  />
-                  <span>Semua</span>
-                </Button>
-                {projectTypes.map((type, index) => (
-                  <Button
-                    variant={filter === type ? "default" : "outline"}
-                    key={`${index}-${type}`}
-                    onClick={() => setFilter(type)}
-                    className="text-sm font-bold transition duration-300 rounded-full border-1 border-ring/50 backdrop-blur"
-                  >
-                    <CheckCircle
-                      className={cn("w-5 h-5", filter === type ? "" : "hidden")}
-                    />
-                    <span>
-                      {
-                        type
-                          .split("-")
-                          .map(
-                            (word) =>
-                              word.charAt(0).toUpperCase() + word.slice(1)
-                          )[0]
-                      }
-                    </span>
-                  </Button>
-                ))}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="rounded-full">
+                      <span className="flex flex-row items-center justify-between w-full gap-2">
+                        Kategori
+                        <ChevronDown className="w-4 h-4" />
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56">
+                    <DropdownMenuRadioGroup
+                      value={category}
+                      onValueChange={(value) => setCategory(value)}
+                    >
+                      {categories.map((category) => (
+                        <DropdownMenuRadioItem key={category} value={category}>
+                          {translateCategory(category)}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button className="rounded-full">
+                      <span className="flex flex-row items-center justify-between w-full gap-2">
+                        Tipe
+                        <ChevronDown className="w-4 h-4" />
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56">
+                    <DropdownMenuRadioGroup
+                      value={type}
+                      onValueChange={(value) => setType(value)}
+                    >
+                      {types.map((type) => (
+                        <DropdownMenuRadioItem key={type} value={type}>
+                          {translateType(type)}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
             )
           )}
@@ -162,7 +196,7 @@ export default function ProjectSection() {
                   {Array.from({ length: 6 }).map((_, indexElement) => (
                     <div
                       key={indexElement}
-                      className="w-full sm:w-full md:w-[48.6%] lg:w-[32.3%] animate-none rounded-xl border-1 hover:shadow-xl shadow-foreground/25 bg-transparent border-ring/50 backdrop-blur p-6 h-[30rem] flex flex-col gap-4 relative"
+                      className="w-full sm:w-full md:w-[48.6%] lg:w-[32.3%] animate-none rounded-xl border-1 hover:shadow-xl shadow-foreground/25 bg-background/50 border-ring/50 backdrop-blur p-6 h-[30rem] flex flex-col gap-4 relative"
                     >
                       <Skeleton className="w-3/4 h-6 mx-auto" />
                       <Skeleton className="w-5/6 h-4 mx-auto" />
@@ -194,7 +228,7 @@ export default function ProjectSection() {
                 >
                   <Alert
                     variant="destructive"
-                    className="flex flex-col items-center justify-center p-6 bg-transparent border rounded-xl backdrop-blur border-ring/50"
+                    className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
                   >
                     <AlertCircle className="!size-24 mb-8 animate-pulse" />
                     <AlertTitle className="w-full text-3xl font-bold">
@@ -220,18 +254,44 @@ export default function ProjectSection() {
                     </AlertDescription>
                   </Alert>
                 </motion.div>
+              ) : filteredWorks?.length === 0 ? (
+                <motion.div
+                  key="empty"
+                  className="w-full mt-10 text-center"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex flex-col items-center justify-center w-full p-8 transition-all duration-300 shadow-xl bg-background/50 text-foreground border-ring/50 shadow-background/5 rounded-xl border-1 backdrop-blur">
+                    <DotLottieReact
+                      src="/assets/illustrations/empty.lottie"
+                      loop
+                      autoplay
+                      className="items-center h-52 w-96"
+                    />
+                    <p className="text-3xl font-bold text-foreground">
+                      Yah! Belum ada karya nih
+                    </p>
+                    <p className="text-base text-muted-foreground">
+                      Hasil pencarian kategori &apos;
+                      {translateCategory(category)}&apos; dan tipe &apos;
+                      {translateType(type)}&apos; kosong. Cari kategori dan tipe
+                      yang lain dulu ya
+                    </p>
+                  </div>
+                </motion.div>
               ) : (
                 <motion.div
-                  key="projects"
+                  key="works"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                   className="contents"
                 >
-                  {filteredProjects?.map((project) => (
+                  {filteredWorks?.map((filteredWork, indexWork) => (
                     <motion.div
-                      key={`${project.id}-${project.title}`}
+                      key={`${indexWork}-${filteredWork.works.title}`}
                       initial={{ opacity: 0, y: 30 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -30 }}
@@ -239,36 +299,40 @@ export default function ProjectSection() {
                       className="w-full sm:w-full md:w-[48.6%] lg:w-[32.3%]"
                     >
                       <CardContainer containerClassName="p-0 inter-var">
-                        <CardBody className="transition duration-300 relative group/card hover:shadow-xl shadow-foreground/25 border-ring/50 w-full rounded-xl p-6 h-[30rem] border-1 backdrop-blur">
+                        <CardBody className="transition duration-300 bg-background/50 relative group/card hover:shadow-xl shadow-foreground/25 border-ring/50 w-full rounded-xl p-6 h-[32rem] border-1 backdrop-blur">
                           <CardItem
                             translateZ="50"
                             className="w-full text-center"
                           >
-                            <h1 className="w-full text-xl font-bold text-neutral-600 dark:text-white">
-                              {project.title}
+                            <h1 className="w-full text-xl font-bold text-foreground">
+                              {filteredWork.works.title}
                             </h1>
-                            <p className="w-full max-w-sm mt-2 text-sm text-neutral-500 dark:text-neutral-300">
-                              {project.description}
+                            <p className="w-full max-w-sm mt-2 text-sm text-muted-foreground">
+                              {filteredWork.works.description}
                             </p>
                           </CardItem>
                           <CardItem translateZ="100" className="w-full mt-4">
                             <Image
-                              src={project.imagePath}
-                              alt={project.title}
+                              src={filteredWork.works.imageUrl}
+                              alt={filteredWork.works.title}
                               height="300"
                               width="300"
                               className="object-fill h-48 w-dvw rounded-xl group-hover/card:shadow-xl"
                             />
-                            <div className="flex flex-wrap justify-center my-6">
-                              {project.tools.map((tools) => (
-                                <Image
-                                  key={`${project.id}-${tools.name}`}
-                                  src={tools.iconPath}
-                                  alt={tools.name}
-                                  height="50"
-                                  width="50"
-                                  className="h-8"
-                                />
+                            <div className="flex flex-wrap justify-center gap-2 my-6">
+                              {filteredWork.tools.map((tools, indexTool) => (
+                                <div
+                                  key={`${indexTool}-${tools.name}`}
+                                  className="px-4 py-2 rounded-full bg-foreground/10"
+                                >
+                                  <Image
+                                    src={`${tools.iconUrl}`}
+                                    alt={tools.name}
+                                    height="50"
+                                    width="50"
+                                    className="h-6"
+                                  />
+                                </div>
                               ))}
                             </div>
                           </CardItem>
@@ -280,7 +344,10 @@ export default function ProjectSection() {
                               asChild
                               className="w-full gap-2 transition duration-300 rounded-full bg-primary text-background"
                             >
-                              <Link href={project.url} className="w-full">
+                              <Link
+                                href={filteredWork.works.url}
+                                className="w-full"
+                              >
                                 <ArrowUp className="text-background" />
                                 <span className="text-sm font-semibold text-background">
                                   Kunjungi

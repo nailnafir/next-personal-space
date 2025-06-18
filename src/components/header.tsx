@@ -19,7 +19,6 @@ export default function Header() {
     <header className="sticky top-0 z-50 items-center w-full transition duration-300 border-b shadow-xl border-ring/50 shadow-background/5 backdrop-blur bg-background/50">
       <div className="max-w-full px-4 mx-auto sm:px-32">
         <div className="flex items-center justify-between h-16">
-          
           {/* LOGO */}
           <motion.div
             initial={{ opacity: 0, x: -18 }}
@@ -49,7 +48,7 @@ export default function Header() {
                     : "text-foreground/75 hover:text-foreground hover:bg-foreground/5"
                 )}
               >
-                <span className="flex items-center gap-1">
+                <span className="flex items-center gap-1 text-foreground">
                   <menu.icon className="w-4 h-4" />
                   {menu.title}
                 </span>

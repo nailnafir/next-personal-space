@@ -2,19 +2,19 @@
 
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import BackgroundGrid from "@/components/aceternity/background-grid";
 import InfoSection from "@/components/section/info-section";
 import AboutSection from "@/components/section/about-section";
-import ProjectSection from "@/components/section/project-section";
-import SkillSection from "@/components/section/skill-section";
+import WorksSection from "@/components/section/works-section";
+import SkillsSection from "@/components/section/skills-section";
 import FloatingIcons from "@/components/floating-icons";
 import FloatingTexts from "@/components/floating-texts";
 import Lanyard from "@/components/reactbits/lanyard";
+import BackgroundParticles from "@/components/personal/background-particles";
 
 export default function Home() {
   return (
     <div className="min-h-screen overflow-visible bg-transparent select-none">
-      <BackgroundGrid>
+      <BackgroundParticles>
         <div className="absolute inset-0 overflow-hidden pointer-events-none top-16">
           {/* Lanyard Profile */}
           <Lanyard
@@ -38,15 +38,15 @@ export default function Home() {
         {/* About Section */}
         <AboutSection />
 
-        {/* Project Section */}
-        <ProjectSection />
+        {/* Work Section */}
+        <WorksSection />
 
         {/* Skill Section */}
-        <SkillSection />
+        <SkillsSection />
 
         {/* Footer */}
         <Footer />
-      </BackgroundGrid>
+      </BackgroundParticles>
     </div>
   );
 }

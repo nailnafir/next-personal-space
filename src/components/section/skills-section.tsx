@@ -2,24 +2,24 @@ import { motion } from "motion/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import { LinkPreview } from "@/components/aceternity/link-preview";
-import { Button } from "@/components/ui/button";
-import { parseBoldUnderline } from "@/lib/helpers";
-import { fetchAbout } from "@/lib/client";
-import { AlertCircle, ArrowDown, RefreshCcw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AboutModel } from "@/types/models";
+import { Button } from "@/components/ui/button";
+import { SkillsModel } from "@/types/models";
+import { fetchSkills } from "@/lib/client";
+import { parseBoldUnderline } from "@/lib/helpers";
+import { AlertCircle, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import useSWR from "swr";
 import Image from "next/image";
 
-export default function AboutSection() {
+export default function SkillsSection() {
   const {
-    data: about,
+    data: skills,
     error,
     isLoading,
     mutate,
-  } = useSWR<AboutModel>("about", fetchAbout, {
+  } = useSWR<SkillsModel>("skills", fetchSkills, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -51,7 +51,7 @@ export default function AboutSection() {
 
   return (
     <section
-      id="tentang"
+      id="keahlian"
       className="flex flex-col items-center justify-center px-4 py-4 sm:h-dvh"
     >
       <div className="w-full max-w-full mx-auto mt-8 space-y-4 text-center sm:max-w-6xl sm:space-y-8">
@@ -64,7 +64,7 @@ export default function AboutSection() {
         >
           <div className="justify-center w-full p-8 transition-all duration-300 shadow-xl bg-background/50 text-foreground border-ring/50 shadow-background/5 rounded-xl border-1 backdrop-blur">
             <h3 className="text-3xl font-bold text-foreground">
-              &quot;Tak Kenal, Maka Tak Sayang&quot;
+              &quot;Keinginan: Pro Gamer, Kenyataan: Programmer&quot;
             </h3>
             {isLoading ? (
               <div className="flex flex-col gap-8 mt-8">
@@ -77,7 +77,7 @@ export default function AboutSection() {
                   ))}
                 </div>
                 <div className="flex flex-wrap items-center justify-center gap-4 overflow-auto">
-                  {Array.from({ length: 8 }).map((_, indexIcon) => (
+                  {Array.from({ length: 16 }).map((_, indexIcon) => (
                     <Skeleton
                       key={indexIcon}
                       className="w-20 h-20 rounded-xl"
@@ -125,14 +125,13 @@ export default function AboutSection() {
             ) : (
               <>
                 <p className="mt-8 text-base text-muted-foreground">
-                  {parseBoldUnderline(about?.user.about || "")}
+                  {parseBoldUnderline(skills?.user.story || "")}
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 mt-8">
-                  {about?.socials.map((social, index) => (
-                    <LinkPreview key={index} url={`${social.url}`}>
+                  {skills?.tools?.map((tool, index) => (
+                    <LinkPreview key={index} url={`${tool.url}`}>
                       <Card
                         data-cursor-target
-                        key={index}
                         className="relative items-center transition-all duration-300 ease-in-out bg-foreground/10 hover:bg-foreground/10 backdrop-blur"
                       >
                         <ShineBorder
@@ -140,8 +139,8 @@ export default function AboutSection() {
                         />
                         <CardContent>
                           <Image
-                            src={`${social.iconUrl}`}
-                            alt={social.platform}
+                            src={`${tool.iconUrl}`}
+                            alt={tool.name}
                             width={32}
                             height={32}
                             className="w-8 h-8"
@@ -151,18 +150,6 @@ export default function AboutSection() {
                     </LinkPreview>
                   ))}
                 </div>
-                <Button
-                  variant="default"
-                  onClick={() =>
-                    window.open("https://t.me/nailnafir", "_blank")
-                  }
-                  className="w-full gap-2 px-4 py-2 mt-8 transition duration-300 rounded-full animate-border-pulse"
-                >
-                  <ArrowDown className="text-background" />
-                  <span className="text-sm font-semibold text-background">
-                    Ngobrol, Yuk!
-                  </span>
-                </Button>
               </>
             )}
           </div>

@@ -1,130 +1,70 @@
 "use client";
 
-import { motion, TargetAndTransition } from "motion/react";
-import { Code, Database, Globe, LucideIcon } from "lucide-react";
+import { motion, type TargetAndTransition } from "motion/react";
+import { Code, Database, Globe, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const floatingAnimation: TargetAndTransition = {
   y: [0, -12, 0],
   transition: {
     duration: 3,
-    repeat: Number.POSITIVE_INFINITY,
+    repeat: Infinity,
     ease: "easeInOut",
   },
 };
 
-const icons: LucideIcon[] = [Code, Database, Globe];
-
-const colorVariants = [
+const floatingIcons: Array<{
+  icon: LucideIcon;
+  delay: number;
+  colors: string;
+  position: string;
+}> = [
   {
-    text: "text-red-700 dark:text-red-300",
-    bg: "bg-red-50 dark:bg-red-900/20",
-    border: "border border-red-200 dark:border-red-800",
-    shadow: "shadow-red-100 dark:shadow-red-900/50",
-  },
-  {
-    text: "text-green-700 dark:text-green-300",
-    bg: "bg-green-50 dark:bg-green-900/20",
-    border: "border border-green-200 dark:border-green-800",
-    shadow: "shadow-green-100 dark:shadow-green-900/50",
-  },
-  {
-    text: "text-blue-700 dark:text-blue-300",
-    bg: "bg-blue-50 dark:bg-blue-900/20",
-    border: "border border-blue-200 dark:border-blue-800",
-    shadow: "shadow-blue-100 dark:shadow-blue-900/50",
-  },
-];
-
-const positions = [
-  {
-    desktopTop: 1,
-    desktopLeft: 60,
+    icon: Code,
     delay: 1.5,
-    mobileTop: 0.3,
-    mobileLeft: 87,
+    colors:
+      "text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800",
+    position: "top-[1%] left-[60%] max-sm:top-[0.3%] max-sm:left-[87%]",
   },
   {
-    desktopTop: 5,
-    desktopLeft: 23,
+    icon: Database,
     delay: 0.9,
-    mobileTop: 1.8,
-    mobileLeft: 18,
+    colors:
+      "text-green-700 dark:text-green-300 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800",
+    position: "top-[5%] left-[18%] max-sm:top-[1.8%] max-sm:left-[18%]",
   },
   {
-    desktopTop: 10,
-    desktopLeft: 78,
+    icon: Globe,
     delay: 0.2,
-    mobileTop: 3.2,
-    mobileLeft: 78,
+    colors:
+      "text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800",
+    position: "top-[9%] left-[72%] max-sm:top-[3.2%] max-sm:left-[78%]",
   },
 ];
 
 export default function FloatingIcons() {
   return (
     <>
-      {/* Desktop Version */}
-      {icons.map((Icon, index) => {
-        const { desktopTop, desktopLeft, delay } = positions[index];
-        const colorScheme = colorVariants[index % colorVariants.length];
+      {floatingIcons.map((item, index) => {
+        const Icon = item.icon;
 
         return (
           <motion.div
-            key={`desktop-${index}`}
+            key={index}
             animate={{
               ...floatingAnimation,
               transition: {
                 ...floatingAnimation.transition,
-                delay,
+                delay: item.delay,
               },
             }}
-            style={{ top: `${desktopTop}%`, left: `${desktopLeft}%` }}
-            className="absolute z-[-1] hidden sm:block"
+            className={cn(
+              "absolute z-[-1] backdrop-blur border rounded-xl shadow transition-all duration-300 p-2 opacity-50",
+              item.colors,
+              item.position
+            )}
           >
-            <div
-              className={cn(
-                "backdrop-blur p-2 rounded-xl opacity-50 shadow transition-all duration-300",
-                colorScheme.bg,
-                colorScheme.border,
-                colorScheme.shadow,
-                colorScheme.text
-              )}
-            >
-              <Icon className="w-8 h-8" />
-            </div>
-          </motion.div>
-        );
-      })}
-
-      {/* Mobile Version */}
-      {icons.map((Icon, index) => {
-        const { mobileTop, mobileLeft, delay } = positions[index];
-        const colorScheme = colorVariants[index % colorVariants.length];
-
-        return (
-          <motion.div
-            key={`mobile-${index}`}
-            animate={{
-              ...floatingAnimation,
-              transition: {
-                ...floatingAnimation.transition,
-                delay,
-              },
-            }}
-            style={{ top: `${mobileTop}%`, left: `${mobileLeft}%` }}
-            className="absolute z-[-1] block sm:hidden"
-          >
-            <div
-              className={cn(
-                "backdrop-blur-sm p-2 rounded-xl opacity-50 shadow-sm transition-all duration-300",
-                colorScheme.bg,
-                colorScheme.border,
-                colorScheme.shadow,
-                colorScheme.text
-              )}
-            >
-              <Icon className="w-4 h-4 sm:w-8 sm:h-8" />
-            </div>
+            <Icon className="w-4 h-4 sm:w-8 sm:h-8" />
           </motion.div>
         );
       })}
