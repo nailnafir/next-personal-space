@@ -2,10 +2,8 @@ import { db } from "@/lib/drizzle";
 import { apiResponse } from "@/lib/utils";
 import {
   jobs,
-  tools,
   users,
   userJobs,
-  userSkills,
   types,
   userWorks,
 } from "@/lib/database-schema";
