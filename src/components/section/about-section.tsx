@@ -105,7 +105,7 @@ export default function AboutSection() {
                   <AlertDescription className="flex flex-col items-center justify-center text-base">
                     <div className="w-full">
                       Tidak dapat menampilkan data{" "}
-                      <span className="font-bold">&apos;karya&apos;</span>{" "}
+                      <span className="font-bold">&apos;tentang&apos;</span>{" "}
                       karena gagal menghubungkan ke{" "}
                       <span className="italic">server</span>. Periksa koneksi
                       internet dan pastikan sudah terhubung
@@ -129,7 +129,7 @@ export default function AboutSection() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 mt-8">
                   {about?.socials.map((social, index) => (
-                    <LinkPreview key={index} url={`${social.url}`}>
+                    <LinkPreview key={index} url={`${social.url}${social.username}`}>
                       <Card
                         data-cursor-target
                         key={index}

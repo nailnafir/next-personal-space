@@ -14,13 +14,13 @@ import { InfoModel } from "@/types/models";
 import { fetchInfo } from "@/lib/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import TypeWriter from "@/components/type-writer";
+import TypeWriter from "@/components/personal/type-writer";
 import useSWR from "swr";
 
 export default function InfoSection() {
   const isMobile = useMobile();
 
-  const { handleMenuClick } = useMenu();
+  const {handleMenuClick} = useMenu();
 
   const [scrollLocked, setScrollLocked] = useState(true);
 
@@ -105,7 +105,7 @@ export default function InfoSection() {
           <AlertDescription className="flex flex-col items-center justify-center text-base">
             <div className="w-full">
               Tidak dapat menampilkan data{" "}
-              <span className="font-bold">&apos;karya&apos;</span> karena gagal
+              <span className="font-bold">&apos;info&apos;</span> karena gagal
               menghubungkan ke <span className="italic">server</span>. Periksa
               koneksi internet dan pastikan sudah terhubung
             </div>

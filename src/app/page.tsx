@@ -6,8 +6,8 @@ import InfoSection from "@/components/section/info-section";
 import AboutSection from "@/components/section/about-section";
 import WorksSection from "@/components/section/works-section";
 import SkillsSection from "@/components/section/skills-section";
-import FloatingIcons from "@/components/floating-icons";
-import FloatingTexts from "@/components/floating-texts";
+import FloatingIcons from "@/components/personal/floating-icons";
+import FloatingTexts from "@/components/personal/floating-texts";
 import Lanyard from "@/components/reactbits/lanyard";
 import BackgroundParticles from "@/components/personal/background-particles";
 

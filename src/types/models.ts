@@ -40,6 +40,7 @@ export type SocialItemModel = {
   platform: string;
   url?: string;
   iconUrl?: string | null;
+  username: string;
 };
 
 export type ToolItemModel = {

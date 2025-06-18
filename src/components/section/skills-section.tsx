@@ -105,7 +105,7 @@ export default function SkillsSection() {
                   <AlertDescription className="flex flex-col items-center justify-center text-base">
                     <div className="w-full">
                       Tidak dapat menampilkan data{" "}
-                      <span className="font-bold">&apos;karya&apos;</span>{" "}
+                      <span className="font-bold">&apos;keahlian&apos;</span>{" "}
                       karena gagal menghubungkan ke{" "}
                       <span className="italic">server</span>. Periksa koneksi
                       internet dan pastikan sudah terhubung
