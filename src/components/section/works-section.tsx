@@ -3,7 +3,7 @@ import { WorksModel } from "@/types/models";
 import { fetchWorks } from "@/lib/client";
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { AlertCircle, ArrowUp, ChevronDown, RefreshCcw } from "lucide-react";
+import { AlertCircle, ArrowUp, RefreshCcw } from "lucide-react";
 import { translateCategory, translateType } from "@/lib/utils";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,14 @@ import {
   CardItem,
 } from "@/components/aceternity/three-dimension-card";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -57,6 +59,7 @@ export default function WorksSection() {
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
+      return;
     }
 
     toast.info(
@@ -133,51 +136,37 @@ export default function WorksSection() {
           ) : (
             !error && (
               <div className="flex flex-row justify-center gap-4 mb-6 overflow-auto">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="rounded-full">
-                      <span className="flex flex-row items-center justify-between w-full gap-2">
-                        Kategori
-                        <ChevronDown className="w-4 h-4" />
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
-                    <DropdownMenuRadioGroup
-                      value={category}
-                      onValueChange={(value) => setCategory(value)}
-                    >
+                <Select onValueChange={(value) => setCategory(value)}>
+                  <SelectTrigger className="!bg-foreground !text-muted data-[placeholder]:!text-muted [&_svg:not([class*='text-'])]:!text-muted font-semibold rounded-full">
+                    <SelectValue placeholder="Kategori" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background/75 backdrop-blur">
+                    <SelectGroup>
+                      <SelectLabel>Kategori</SelectLabel>
                       {categories.map((category) => (
-                        <DropdownMenuRadioItem key={category} value={category}>
+                        <SelectItem key={category} value={category}>
                           {translateCategory(category)}
-                        </DropdownMenuRadioItem>
+                        </SelectItem>
                       ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
 
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button className="rounded-full">
-                      <span className="flex flex-row items-center justify-between w-full gap-2">
-                        Tipe
-                        <ChevronDown className="w-4 h-4" />
-                      </span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent className="w-56">
-                    <DropdownMenuRadioGroup
-                      value={type}
-                      onValueChange={(value) => setType(value)}
-                    >
+                <Select onValueChange={(value) => setType(value)}>
+                  <SelectTrigger className="!bg-foreground !text-muted data-[placeholder]:!text-muted [&_svg:not([class*='text-'])]:!text-muted font-semibold rounded-full">
+                    <SelectValue placeholder="Tipe" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-background/75 backdrop-blur">
+                    <SelectGroup>
+                      <SelectLabel>Tipe</SelectLabel>
                       {types.map((type) => (
-                        <DropdownMenuRadioItem key={type} value={type}>
+                        <SelectItem key={type} value={type}>
                           {translateType(type)}
-                        </DropdownMenuRadioItem>
+                        </SelectItem>
                       ))}
-                    </DropdownMenuRadioGroup>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
             )
           )}
