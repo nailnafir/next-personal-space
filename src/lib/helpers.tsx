@@ -1,12 +1,3 @@
-import {
-  FaGithub,
-  FaInstagram,
-  FaLinkedin,
-  FaSpotify,
-  FaSteam,
-} from "react-icons/fa6";
-import { IconType } from "react-icons";
-
 export function parseBoldUnderline(text: string): React.ReactNode[] {
   const parts = text.split(/(\*[^*]+\*)/g);
 
@@ -21,21 +12,4 @@ export function parseBoldUnderline(text: string): React.ReactNode[] {
     }
     return part;
   });
-}
-
-export function getSocialIcon(platform: string): IconType {
-  switch (platform.toLowerCase()) {
-    case "instagram":
-      return FaInstagram;
-    case "github":
-      return FaGithub;
-    case "linkedin":
-      return FaLinkedin;
-    case "steam":
-      return FaSteam;
-    case "spotify":
-      return FaSpotify;
-    default:
-      throw new Error(`Icon platform "${platform}" belum dibikin`);
-  }
 }

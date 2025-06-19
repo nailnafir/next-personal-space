@@ -57,7 +57,7 @@ export default function BackgroundParticles({ children }: BackgroundParticlesPro
       fpsLimit: 120,
       interactivity: {
         events: {
-          onClick: { enable: true, mode: "push" },
+          onClick: { enable: false },
           onHover: { enable: true, mode: "repulse" },
         },
         modes: {
@@ -82,7 +82,7 @@ export default function BackgroundParticles({ children }: BackgroundParticlesPro
         },
         number: {
           density: { enable: true },
-          value: 80,
+          value: 50,
         },
         opacity: { value: 0.5 },
         shape: { type: "circle" },
