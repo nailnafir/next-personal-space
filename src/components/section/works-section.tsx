@@ -306,7 +306,7 @@ export default function WorksSection() {
                               alt={filteredWork.works.title}
                               height="300"
                               width="300"
-                              className="object-fill h-48 w-dvw rounded-xl group-hover/card:shadow-xl"
+                              className="object-fill h-48 w-full rounded-xl group-hover/card:shadow-xl"
                             />
                             <div className="flex flex-wrap justify-center gap-2 my-6">
                               {filteredWork.tools.map((tools, indexTool) => (
