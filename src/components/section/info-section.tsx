@@ -91,7 +91,7 @@ export default function InfoSection() {
   return (
     <section
       id="info"
-      className="h-[calc(100dvh-64px)] justify-end flex flex-col items-center px-4 py-4"
+      className="h-[calc(100svh-64px)] justify-end flex flex-col items-center px-4 py-4"
     >
       {error ? (
         <Alert

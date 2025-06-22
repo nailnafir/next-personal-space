@@ -38,7 +38,7 @@ const floatingIcons: Array<{
     delay: 0.2,
     colors:
       "text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800",
-    position: "top-[9%] left-[72%] max-sm:top-[3.2%] max-sm:left-[78%]",
+    position: "top-[9%] left-[72%] max-sm:top-[2.9%] max-sm:left-[78%]",
   },
 ];
 
