@@ -1,11 +1,19 @@
-import { LucideIcon, Lightbulb, Star, HandHeart } from "lucide-react";
+import {
+  LucideIcon,
+  Lightbulb,
+  Star,
+  HandHeart,
+  Network,
+  MessageSquare,
+} from "lucide-react";
 
 interface MenuItem {
   icon: LucideIcon;
   title: string;
+  href?: string;
 }
 
-export const menus: MenuItem[] = [
+export const mainMenus: MenuItem[] = [
   {
     icon: Lightbulb,
     title: "Tentang",
@@ -17,5 +25,18 @@ export const menus: MenuItem[] = [
   {
     icon: Star,
     title: "Keahlian",
+  },
+];
+
+export const articleMenus: MenuItem[] = [
+  {
+    icon: Network,
+    title: "Tutorial",
+    href: "/tutorials",
+  },
+  {
+    icon: MessageSquare,
+    title: "Diskusi",
+    href: "/discussions",
   },
 ];

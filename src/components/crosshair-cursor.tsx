@@ -1,15 +1,27 @@
 "use client";
 
 import { useMobile } from "@/hooks/use-mobile";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-export function CrosshairCursor() {
+export default function CrosshairCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const dotRef = useRef<HTMLDivElement>(null);
 
   const [hoverTarget, setHoverTarget] = useState<DOMRect | null>(null);
 
   const isMobile = useMobile();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (pathname === "/") {
+      document.body.classList.add("cursor-none");
+    }
+
+    return () => {
+      document.body.classList.remove("cursor-none");
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {

@@ -14,7 +14,7 @@ import { InfoModel } from "@/types/models";
 import { fetchInfo } from "@/lib/client";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
-import TypeWriter from "@/components/personal/type-writer";
+import TypeWriter from "@/components/type-writer";
 import useSWR from "swr";
 
 export default function InfoSection() {

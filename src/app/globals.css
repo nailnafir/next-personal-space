@@ -169,13 +169,13 @@
     @apply bg-background text-foreground;
   }
 
-  *,
-  *::before,
-  *::after {
-    cursor: none !important;
-  }
-
   html {
     scroll-behavior: smooth;
+  }
+
+  body.cursor-none *,
+  body.cursor-none *::before,
+  body.cursor-none *::after {
+    cursor: none !important;
   }
 }

@@ -94,7 +94,7 @@ export default function BackgroundParticles({ children }: BackgroundParticlesPro
   );
 
   return (
-    <div className="relative min-h-screen bg-transparent">
+    <div className="bg-transparent">
       {init && (
         <Particles
           id="tsparticles"

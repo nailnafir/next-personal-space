@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 
-export function PreLoader() {
+export default function PreLoader() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

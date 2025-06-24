@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { menus } from "@/lib/data/menus";
+import { mainMenus } from "@/lib/data/menus";
 
 export function useMenu() {
   const [activeMenu, setActiveMenu] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = menus.map((menu) => ({
+      const sections = mainMenus.map((menu) => ({
         id: menu.title.toLowerCase(),
         element: document.getElementById(menu.title.toLowerCase()),
       }));
