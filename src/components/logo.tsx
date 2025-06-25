@@ -4,6 +4,8 @@ import { Audiowide } from "next/font/google";
 
 const audioWide = Audiowide({
   weight: "400",
+  subsets: ["latin"],
+  display: "swap",
 });
 
 export default function Logo() {
