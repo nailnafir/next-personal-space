@@ -1,9 +1,22 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
+import useSWR from "swr";
+import useSWRMutation from "swr/mutation";
 import TableOfContents from "@/components/table-of-contents";
 import Comments from "@/components/comments";
+import { useEffect } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import { ArticleItemModel } from "@/types/models";
+import { readArticleId, updateArticleViews } from "@/lib/network/endpoint";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
+import { AlertCircle, ClipboardCopy, RefreshCcw, Share2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { formatDateTimeIndonesia } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -12,213 +25,299 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card";
-
-interface Section {
-  id: string;
-  title: string;
-}
 
 export default function ArticleDetailsPage() {
   const { id } = useParams();
 
-  const sections: Section[] = [
-    { id: "introduction", title: "Introduction" },
-    { id: "getting-started", title: "Getting Started" },
-    { id: "main-concepts", title: "Main Concepts" },
-    { id: "advanced-topics", title: "Advanced Topics" },
-    { id: "best-practices", title: "Best Practices" },
-    { id: "conclusion", title: "Conclusion" },
-  ];
+  const { trigger: incrementViews } = useSWRMutation(
+    `article-${id}-increment-views`,
+    async () => await updateArticleViews(id)
+  );
+
+  useEffect(() => {
+    if (!id) return;
+
+    const key = `viewed-article-${id}`;
+
+    if (sessionStorage.getItem(key)) return;
+
+    incrementViews()
+      .then(() => sessionStorage.setItem(key, "true"))
+      .catch((error: unknown) => console.error("Gagal update views:", error));
+  }, [incrementViews, id]);
+
+  const {
+    data: article,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR<ArticleItemModel>(`article-${id}`, () => readArticleId(id), {
+    revalidateOnFocus: false,
+    revalidateOnReconnect: false,
+  });
+
+  const handleRetry = async () => {
+    const toastId = "retry-toast";
+
+    try {
+      toast.loading("Menghubungkan", {
+        id: toastId,
+        description: "Tunggu sebentar, lagi coba hubungin ke server dulu",
+      });
+
+      await mutate();
+
+      toast.success("Berhasil", {
+        id: toastId,
+        description: "Udah terhubung ke server, data udah tampil!",
+      });
+    } catch (error) {
+      toast.error("Kesalahan", {
+        id: toastId,
+        description: `Servernya gak mau terhubung, ada masalah: ${
+          error instanceof Error ? error.message : "Masalah tidak diketahui"
+        }`,
+      });
+    }
+  };
+
+  const sections = article?.content.map((section) => section.title);
 
   return (
     <div className="transition-all duration-300 bg-background">
       <div className="mx-auto max-w-7xl">
-        <div className="grid grid-cols-12 gap-8 py-6">
-          {/* Table of contents on the left */}
-          <aside className="hidden lg:block lg:col-span-3">
-            <div className="sticky top-24">
-              <Card className="mb-6 transition-all duration-300 border rounded-xl bg-background">
-                <CardContent>
-                  <Breadcrumb>
-                    <BreadcrumbList>
-                      <BreadcrumbItem>
-                        <BreadcrumbLink asChild>
-                          <Link href="/articles">Artikel</Link>
-                        </BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator />
-                      <BreadcrumbItem>
-                        <BreadcrumbPage>{id}</BreadcrumbPage>
-                      </BreadcrumbItem>
-                    </BreadcrumbList>
-                  </Breadcrumb>
-                </CardContent>
-              </Card>
+        {isLoading ? (
+          <div className="grid grid-cols-12 gap-8 py-6">
+            {/* Left TOC */}
+            <aside className="hidden space-y-4 lg:block lg:col-span-3">
+              <Skeleton className="w-full h-12 rounded-xl" />
+              <Skeleton className="w-full h-64 rounded-xl" />
+            </aside>
 
-              <TableOfContents sections={sections} />
-            </div>
-          </aside>
-
-          {/* Main content in the center */}
-          <main className="col-span-12 lg:col-span-6">
-            <div className="mb-8">
-              <h1 className="mb-4 text-4xl font-bold">
-                Complete Guide to Modern Web Development
-              </h1>
-              <p className="text-xl leading-relaxed text-muted-foreground">
-                Learn the fundamentals and advanced concepts of modern web
-                development with practical examples and best practices.
-              </p>
-              <div className="flex items-center pt-6 mt-6 border-t">
-                <div className="flex items-center space-x-4 text-sm font-light text-muted-foreground">
-                  <span>By John Doe</span>
-                  <span>•</span>
-                  <span>March 15, 2024</span>
-                  <span>•</span>
-                  <span>12 min read</span>
+            {/* Main Content */}
+            <main className="col-span-12 space-y-6 lg:col-span-6">
+              <Skeleton className="w-3/4 h-10" />
+              <Skeleton className="w-1/2 h-6" />
+              <div className="flex pt-6 mt-6 space-x-4 border-t">
+                <div className="flex flex-row justify-between w-full gap-4">
+                  {[...Array(4)].map((_, index) => (
+                    <Skeleton key={index} className="w-1/4 h-6" />
+                  ))}
                 </div>
               </div>
-            </div>
 
-            <section id="introduction" className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-foreground">
-                Introduction
-              </h2>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Web development has evolved significantly over the past decade.
-                Modern frameworks, tools, and practices have transformed how we
-                build applications for the web. This comprehensive guide will
-                walk you through everything you need to know.
-              </p>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Whether you&apos;re a beginner just starting out or an
-                experienced developer looking to update your skills, this guide
-                covers the essential concepts and techniques used in
-                today&apos;s web development landscape.
-              </p>
-              <p className="leading-relaxed text-muted-foreground">
-                We&apos;ll explore various topics from basic HTML and CSS to
-                advanced JavaScript frameworks, build tools, and deployment
-                strategies. By the end of this guide, you&apos;ll have a solid
-                understanding of modern web development practices.
-              </p>
-            </section>
+              {/* Simulate few sections */}
+              {[...Array(4)].map((_, index) => (
+                <div key={index} className="pt-6 space-y-3">
+                  <Skeleton className="w-3/4 h-6" />
+                  <Skeleton className="w-full h-4" />
+                  <Skeleton className="w-full h-4" />
+                  <Skeleton className="w-5/6 h-4" />
+                </div>
+              ))}
+            </main>
+          </div>
+        ) : error ? (
+          <Alert
+            variant="destructive"
+            className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
+          >
+            <AlertCircle className="!size-24 mb-8 animate-pulse" />
+            <AlertTitle className="w-full text-3xl font-bold">
+              Terjadi Kesalahan
+            </AlertTitle>
+            <AlertDescription className="flex flex-col items-center justify-center text-base">
+              <div className="w-full">
+                Tidak dapat menampilkan data{" "}
+                <span className="font-bold">&apos;artikel&apos;</span> karena
+                gagal menghubungkan ke <span className="italic">server</span>.
+                Periksa koneksi internet dan pastikan sudah terhubung
+              </div>
+              <Button
+                variant="destructive"
+                className="mt-8 w-52"
+                onClick={handleRetry}
+                disabled={isLoading}
+              >
+                <RefreshCcw />
+                <span>Coba Lagi</span>
+              </Button>
+            </AlertDescription>
+          </Alert>
+        ) : (
+          <div className="grid grid-cols-12 gap-8 py-6">
+            {/* Table of contents on the left */}
+            <aside className="hidden lg:block lg:col-span-3">
+              <div className="sticky top-24">
+                <Card className="mb-6 transition-all duration-300 border rounded-xl bg-background">
+                  <CardContent>
+                    <Breadcrumb>
+                      <BreadcrumbList>
+                        <BreadcrumbItem>
+                          <BreadcrumbLink asChild>
+                            <Link href="/articles">Artikel</Link>
+                          </BreadcrumbLink>
+                        </BreadcrumbItem>
+                        <BreadcrumbSeparator />
+                        <BreadcrumbItem>
+                          <BreadcrumbPage>{id}</BreadcrumbPage>
+                        </BreadcrumbItem>
+                      </BreadcrumbList>
+                    </Breadcrumb>
+                  </CardContent>
+                </Card>
 
-            <section id="getting-started" className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-foreground">
-                Getting Started
-              </h2>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Before diving into advanced topics, it&apos;s important to
-                establish a solid foundation. Make sure you have a good
-                understanding of HTML, CSS, and JavaScript fundamentals.
-              </p>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Set up your development environment with a code editor, version
-                control system, and basic development tools. We recommend using
-                VS Code, Git, and Node.js as your starting toolkit.
-              </p>
-              <p className="leading-relaxed text-muted-foreground">
-                Create your first project and familiarize yourself with the
-                development workflow. Practice writing clean, semantic HTML and
-                organizing your CSS effectively.
-              </p>
-            </section>
+                <TableOfContents sections={sections} />
+              </div>
+            </aside>
 
-            <section id="main-concepts" className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-foreground">
-                Main Concepts
-              </h2>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Modern web development revolves around several key concepts that
-                you should master. These include component-based architecture,
-                state management, and reactive programming.
-              </p>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Understanding how to structure your applications using
-                components makes your code more maintainable and reusable. Learn
-                about props, state, and the component lifecycle.
-              </p>
-              <p className="leading-relaxed text-muted-foreground">
-                Explore different approaches to managing application state, from
-                simple local state to complex global state management solutions.
-              </p>
-            </section>
+            {/* Main content in the center */}
+            <main className="col-span-12 lg:col-span-6">
+              <div className="mb-8">
+                <h1 className="mb-4 text-4xl font-bold">{article?.title}</h1>
+                <p className="text-xl leading-relaxed text-muted-foreground">
+                  {article?.subtitle}
+                </p>
+                <div className="flex items-center pt-6 mt-6 border-t">
+                  <div className="flex items-center justify-between w-full text-sm font-light text-muted-foreground">
+                    <div className="flex items-center space-x-4">
+                      <span>
+                        {article?.author?.name || "Penulis tidak dikenal"}
+                      </span>
+                      <span>•</span>
+                      <span>
+                        {formatDateTimeIndonesia(article?.publishedAt, "date")}
+                      </span>
+                      <span>•</span>
+                      <span>{article?.likes || 0} Suka</span>
+                      <span>•</span>
+                      <span>{article?.views || 0} Dibaca</span>
+                    </div>
+                    <div className="flex items-center space-x-4">
+                      <Button
+                        size="sm"
+                        className="transition duration-300 rounded-full bg-primary hover:bg-primary/75"
+                        onClick={() => {
+                          navigator.clipboard.writeText(window.location.href);
+                          toast.success("Link artikel berhasil disalin!");
+                        }}
+                      >
+                        <ClipboardCopy className="w-4 h-4 text-primary-foreground" />
+                        <span className="text-primary-foreground">Salin</span>
+                      </Button>
 
-            <section id="advanced-topics" className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-foreground">
-                Advanced Topics
-              </h2>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Once you&apos;ve mastered the basics, it&apos;s time to explore
-                advanced topics that will take your skills to the next level.
-                These include performance optimization, security considerations,
-                and scalability patterns.
-              </p>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Learn about code splitting, lazy loading, and other techniques
-                to improve your application&apos;s performance. Understand how
-                to implement proper error handling and logging strategies.
-              </p>
-              <p className="leading-relaxed text-muted-foreground">
-                Explore advanced patterns like higher-order components, render
-                props, and hooks. These patterns will help you write more
-                flexible and reusable code.
-              </p>
-            </section>
+                      <Button
+                        size="sm"
+                        className="transition duration-300 rounded-full bg-primary hover:bg-primary/75"
+                        onClick={() => {
+                          if (navigator.share) {
+                            navigator
+                              .share({
+                                title: article?.title || "Artikel",
+                                url: window.location.href,
+                              })
+                              .catch(() =>
+                                toast.error("Gagal membagikan link")
+                              );
+                          } else {
+                            toast.warning(
+                              "Fitur bagikan tidak didukung di browser ini"
+                            );
+                          }
+                        }}
+                      >
+                        <Share2 className="w-4 h-4 text-primary-foreground" />
+                        <span className="text-primary-foreground">Bagikan</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
 
-            <section id="best-practices" className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-foreground">
-                Best Practices
-              </h2>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Following best practices is crucial for writing maintainable and
-                scalable code. This includes proper code organization,
-                consistent naming conventions, and thorough testing strategies.
-              </p>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Implement continuous integration and deployment pipelines to
-                automate your development workflow. Use linting tools and code
-                formatters to maintain consistent code quality.
-              </p>
-              <p className="leading-relaxed text-muted-foreground">
-                Document your code properly and write comprehensive tests. This
-                will make your codebase easier to maintain and extend over time.
-              </p>
-            </section>
+              {Array.isArray(article?.content) ? (
+                article.content.map((section) => (
+                  <section
+                    key={section.title}
+                    id={section.title}
+                    className="mb-12"
+                  >
+                    <h2 className="mb-4 text-2xl font-bold text-foreground">
+                      {section.title}
+                    </h2>
 
-            <section id="conclusion" className="mb-12">
-              <h2 className="mb-4 text-2xl font-bold text-foreground">
-                Conclusion
-              </h2>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Modern web development is an exciting and rapidly evolving
-                field. By mastering the concepts and practices covered in this
-                guide, you&apos;ll be well-equipped to build robust, scalable
-                web applications.
-              </p>
-              <p className="mb-4 leading-relaxed text-muted-foreground">
-                Remember that learning is an ongoing process. Stay curious, keep
-                experimenting with new technologies, and don&apos;t be afraid to
-                challenge yourself with complex projects.
-              </p>
-              <p className="leading-relaxed text-muted-foreground">
-                The web development community is vibrant and supportive. Engage
-                with other developers, contribute to open source projects, and
-                share your knowledge with others.
-              </p>
-            </section>
-          </main>
+                    {Array.isArray(section.content) &&
+                      section.content.map((block, indexContent) => {
+                        if (block.type === "paragraph") {
+                          return (
+                            <p
+                              key={indexContent}
+                              className={`${
+                                indexContent === section.content.length - 1
+                                  ? "leading-relaxed text-muted-foreground"
+                                  : "mb-4 leading-relaxed text-muted-foreground"
+                              }`}
+                            >
+                              {block.text}
+                            </p>
+                          );
+                        }
 
-          {/* Comments section on the right */}
-          <aside className="hidden lg:block lg:col-span-3">
-            <Comments />
-          </aside>
-        </div>
+                        if (block.type === "list") {
+                          return (
+                            <ul
+                              key={indexContent}
+                              className="mb-4 leading-relaxed list-disc list-inside text-muted-foreground"
+                            >
+                              {block.items.map((item, index) => (
+                                <li key={index}>{item}</li>
+                              ))}
+                            </ul>
+                          );
+                        }
+
+                        if (block.type === "code") {
+                          return (
+                            <pre
+                              key={indexContent}
+                              className="p-4 mb-4 overflow-x-auto text-sm rounded-md bg-muted text-foreground"
+                            >
+                              <code>{block.code}</code>
+                            </pre>
+                          );
+                        }
+
+                        if (block.type === "image") {
+                          return (
+                            <div key={indexContent} className="mb-4">
+                              <Image
+                                src={block.url}
+                                alt={block.alt || ""}
+                                className="h-auto max-w-full rounded-md"
+                              />
+                            </div>
+                          );
+                        }
+
+                        return null;
+                      })}
+                  </section>
+                ))
+              ) : (
+                <p className="text-sm italic text-muted-foreground">
+                  Konten artikel tidak tersedia atau rusak
+                </p>
+              )}
+            </main>
+
+            {/* Comments section on the right */}
+            <aside className="hidden lg:block lg:col-span-3">
+              <Comments
+                articleId={id}
+                authorId={article?.author?.id}
+              />
+            </aside>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { Send } from "lucide-react";
-import { subscribeSchema } from "@/lib/form-schema";
+import { subscribeSchema } from "@/lib/schema/form-schema";
 import {
   Form,
   FormControl,

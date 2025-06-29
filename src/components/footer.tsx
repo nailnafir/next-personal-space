@@ -1,7 +1,7 @@
 "use client";
 
 import { mainMenus } from "@/lib/data/menus";
-import { fetchAbout } from "@/lib/client";
+import { readAbout } from "@/lib/network/endpoint";
 import { AboutModel } from "@/types/models";
 import { setups } from "@/lib/data/setup";
 import { SubscribeForm } from "@/components/subscribe-form";
@@ -20,7 +20,7 @@ export default function Footer() {
       : `©${projectYear} - ${currentYear}.`;
   };
 
-  const { data: about, isLoading } = useSWR<AboutModel>("about", fetchAbout, {
+  const { data: about, isLoading } = useSWR<AboutModel>("about", readAbout, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -32,7 +32,7 @@ export default function Footer() {
           <div className="grid grid-cols-1 gap-10 px-4 md:grid-cols-4 sm:px-32">
             {/* Me Loading */}
             <div className="space-y-4">
-              <Skeleton className="w-32 h-10" /> {/* Logo Placeholder */}
+              <Skeleton className="w-32 h-10" />
               <Skeleton className="w-20 h-5" />
               <div className="space-y-2">
                 {[...Array(4)].map((_, index) => (
@@ -99,7 +99,7 @@ export default function Footer() {
                   <li key={index}>
                     <Link
                       data-cursor-target
-                      href={`${social.url}`}
+                      href={`${social.baseUrl}${social.urlPrefix}${social.username}`}
                       className="p-1 transition text-muted-foreground/75 hover:text-foreground"
                     >
                       {social.platform}

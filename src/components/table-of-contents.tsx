@@ -12,13 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-interface Section {
-  id: string;
-  title: string;
-}
-
 interface TableOfContentsProps {
-  sections: Section[];
+  sections: string[] | undefined;
 }
 
 export default function TableOfContents({
@@ -28,12 +23,17 @@ export default function TableOfContents({
 
   useEffect(() => {
     const handleScroll = (): void => {
-      const scrollPosition = window.scrollY + 100;
+      const scrollPosition = window.scrollY + window.innerHeight / 2;
+
+      if (!sections || sections.length === 0) {
+        setActiveSection("");
+        return;
+      }
 
       for (let i = sections.length - 1; i >= 0; i--) {
-        const element = document.getElementById(sections[i].id);
+        const element = document.getElementById(sections[i]);
         if (element && element.offsetTop <= scrollPosition) {
-          setActiveSection(sections[i].id);
+          setActiveSection(sections[i]);
           break;
         }
       }
@@ -47,25 +47,25 @@ export default function TableOfContents({
   return (
     <Card className="transition-all duration-300 border rounded-xl bg-background">
       <CardHeader>
-        <CardTitle>Daftar Isi ({sections.length})</CardTitle>
+        <CardTitle>Daftar Isi ({sections?.length})</CardTitle>
         <CardDescription>
           Panduan cepat ke bagian penting dari artikel ini
         </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col">
-          {sections.map((section) => (
+          {sections?.map((section) => (
             <Link
-              key={section.id}
-              href={`#${section.id}`}
+              key={section}
+              href={`#${section}`}
               className={cn(
                 "px-3 rounded-xl py-2 text-sm transition",
-                activeSection === section.id
+                activeSection === section
                   ? "text-foreground font-bold"
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
-              {section.title}
+              {section}
             </Link>
           ))}
         </div>

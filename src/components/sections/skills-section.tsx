@@ -6,8 +6,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { SkillsModel } from "@/types/models";
-import { fetchSkills } from "@/lib/client";
+import { readSkills } from "@/lib/network/endpoint";
 import { parseBoldUnderline } from "@/lib/helpers";
+import { getSupabaseURL } from "@/lib/utils";
 import { AlertCircle, RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import useSWR from "swr";
@@ -19,7 +20,7 @@ export default function SkillsSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<SkillsModel>("skills", fetchSkills, {
+  } = useSWR<SkillsModel>("skills", readSkills, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -139,7 +140,7 @@ export default function SkillsSection() {
                         />
                         <CardContent>
                           <Image
-                            src={`${tool.iconUrl}`}
+                            src={`${getSupabaseURL(tool.iconUrl)}`}
                             alt={tool.name}
                             width={32}
                             height={32}

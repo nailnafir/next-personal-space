@@ -1,3 +1,14 @@
+import { ParamValue } from "next/dist/server/request/params";
+
+export enum WorkStatusEnum {
+  Pending = "pending",
+  Completed = "completed",
+  Draft = "draft",
+  Published = "published",
+  Archived = "archived",
+  Scheduled = "scheduled",
+}
+
 export type SuccessResponse<T> = {
   status: "success";
   message?: string;
@@ -29,6 +40,58 @@ export type WorkTypeItemModel = {
   total?: number | null;
 };
 
+export type TagItemModel = {
+  name: string;
+};
+
+export interface SendCommentPayload {
+  articleId: ParamValue;
+  content: string;
+  authorId?: number | null;
+}
+
+export type CommentItemModel = {
+  content: string;
+  createdAt?: string | null;
+  author?: AuthorItemModel | null;
+};
+
+export type AuthorItemModel = {
+  id?: number | null;
+  name?: string | null;
+  photoUrl?: string | null;
+};
+
+export type ArticleContentModel = {
+  title: string;
+  content: Array<
+    | { type: "paragraph"; text: string }
+    | { type: "list"; items: string[] }
+    | { type: "code"; language: string; code: string }
+    | { type: "image"; url: string; alt?: string }
+  >;
+}[];
+
+export type ArticleItemModel = {
+  title?: string | null;
+  subtitle?: string | null;
+  content: ArticleContentModel;
+  views?: number | null;
+  likes?: number | null;
+  thumbnailUrl?: string | null;
+  status?: WorkStatusEnum | null;
+  publishedAt?: string | null;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  author?: AuthorItemModel | null;
+  tags?: TagItemModel[] | null;
+  comments?: CommentItemModel[] | null;
+};
+
+export interface ArticlesModel {
+  articles: ArticleItemModel[];
+}
+
 export type UserItemModel = {
   name?: string | null;
   photoUrl?: string | null;
@@ -38,7 +101,8 @@ export type UserItemModel = {
 
 export type SocialItemModel = {
   platform: string;
-  url?: string;
+  baseUrl?: string | null;
+  urlPrefix?: string | null;
   iconUrl?: string | null;
   username: string;
 };
@@ -53,14 +117,14 @@ export type WorkItemModel = {
   title: string;
   description: string;
   imageUrl: string;
-  url: string;
+  url?: string | null;
 };
 
 export interface WorksModel {
   works: WorkItemModel;
-  category: WorkCategoryItemModel;
-  type: WorkTypeItemModel;
-  tools: ToolItemModel[];
+  category?: WorkCategoryItemModel | null;
+  type?: WorkTypeItemModel | null;
+  tools?: ToolItemModel[] | null;
 }
 
 export interface SkillsModel {

@@ -1,4 +1,4 @@
-import { db } from "@/lib/drizzle";
+import { db } from "@/lib/network/drizzle";
 import { apiResponse } from "@/lib/utils";
 import {
   jobs,
@@ -6,7 +6,7 @@ import {
   userJobs,
   types,
   userWorks,
-} from "@/lib/database-schema";
+} from "@/lib/schema/database-schema";
 import { InfoModel } from "@/types/models";
 import { count, eq, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";

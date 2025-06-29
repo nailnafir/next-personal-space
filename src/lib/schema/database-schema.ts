@@ -8,14 +8,21 @@ import {
   integer,
   primaryKey,
   pgEnum,
-  boolean,
+  jsonb,
 } from "drizzle-orm/pg-core";
 
-export const roleEnum = pgEnum("role", ["user", "super-user"]);
+export const userRoleEnum = pgEnum("user_role", ["user", "super-user"]);
 
-export const statusEnum = pgEnum("status", ["pending", "completed"]);
+export const workStatusEnum = pgEnum("work_status", [
+  "pending",
+  "completed",
+  "draft",
+  "published",
+  "archived",
+  "scheduled",
+]);
 
-export const levelEnum = pgEnum("level", [
+export const skillLevelEnum = pgEnum("skill_level", [
   "beginner",
   "intermediate",
   "expert",
@@ -24,7 +31,7 @@ export const levelEnum = pgEnum("level", [
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
   photoUrl: text("photo_url"),
-  role: roleEnum("role").notNull().default("user"),
+  role: userRoleEnum("role").notNull().default("user"),
   email: varchar("email", { length: 100 }).notNull().unique(),
   password: varchar("password", { length: 255 }).notNull(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -88,7 +95,7 @@ export const userJobs = pgTable(
 export const socials = pgTable("socials", {
   id: serial("id").primaryKey(),
   platform: varchar("platform", { length: 50 }).notNull(),
-  base_url: text("base_url").notNull(),
+  baseUrl: text("base_url").notNull(),
   urlPrefix: text("url_prefix"),
   iconUrl: text("icon_url"),
   createdAt: timestamp("created_at").defaultNow(),
@@ -140,7 +147,7 @@ export const userSkills = pgTable(
       })
       .notNull(),
     description: varchar("description", { length: 255 }),
-    level: levelEnum("level").notNull().default("beginner"),
+    level: skillLevelEnum("level").notNull().default("beginner"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
@@ -172,24 +179,20 @@ export const userWorks = pgTable(
         onDelete: "cascade",
       })
       .notNull(),
-    categoryId: integer("category_id")
-      .references(() => categories.id, {
-        onDelete: "cascade",
-      })
-      .notNull(),
-    typeId: integer("type_id")
-      .references(() => types.id, {
-        onDelete: "cascade",
-      })
-      .notNull(),
+    categoryId: integer("category_id").references(() => categories.id, {
+      onDelete: "cascade",
+    }),
+    typeId: integer("type_id").references(() => types.id, {
+      onDelete: "cascade",
+    }),
     durationInDays: integer("duration_in_days"),
-    status: statusEnum("status").notNull().default("pending"),
+    status: workStatusEnum("status").notNull().default("pending"),
     createdAt: timestamp("created_at").defaultNow(),
     updatedAt: timestamp("updated_at").defaultNow(),
   },
   (table) => ({
     pk: primaryKey({
-      columns: [table.userId, table.workId, table.categoryId, table.typeId],
+      columns: [table.userId, table.workId],
     }),
   })
 );
@@ -252,16 +255,12 @@ export const articleTags = pgTable(
 
 export const articles = pgTable("articles", {
   id: serial("id").primaryKey(),
-  title: varchar("title", { length: 200 }).notNull(),
-  subtitle: varchar("subtitle", { length: 300 }).notNull(),
-  content: text("content").notNull(),
+  content: jsonb("content").notNull(),
   views: integer("views").default(0),
   likes: integer("likes").default(0),
-  thumbnailUrl: text("thumbnail_url"),
-  authorId: integer("author_id").references(() => users.id, {
-    onDelete: "set null",
-  }),
-  published: boolean("published").default(false),
+  workId: integer("work_id")
+    .references(() => works.id, { onDelete: "cascade" })
+    .notNull(),
   publishedAt: timestamp("published_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
@@ -333,15 +332,28 @@ export const userSkillsRelations = relations(userSkills, ({ one }) => ({
   tool: one(tools, { fields: [userSkills.toolId], references: [tools.id] }),
 }));
 
-export const worksRelations = relations(works, ({ many }) => ({
+export const worksRelations = relations(works, ({ many, one }) => ({
   users: many(userWorks),
   tools: many(workTools),
+  article: one(articles, {
+    fields: [works.id],
+    references: [articles.workId],
+  }),
 }));
 
 export const userWorksRelations = relations(userWorks, ({ one }) => ({
-  user: one(users, { fields: [userWorks.userId], references: [users.id] }),
-  work: one(works, { fields: [userWorks.workId], references: [works.id] }),
-  type: one(types, { fields: [userWorks.typeId], references: [types.id] }),
+  user: one(users, {
+    fields: [userWorks.userId],
+    references: [users.id],
+  }),
+  work: one(works, {
+    fields: [userWorks.workId],
+    references: [works.id],
+  }),
+  type: one(types, {
+    fields: [userWorks.typeId],
+    references: [types.id],
+  }),
   category: one(categories, {
     fields: [userWorks.categoryId],
     references: [categories.id],
@@ -377,7 +389,10 @@ export const articleTagsRelations = relations(articleTags, ({ one }) => ({
 }));
 
 export const articlesRelations = relations(articles, ({ one, many }) => ({
-  author: one(users, { fields: [articles.authorId], references: [users.id] }),
+  work: one(works, {
+    fields: [articles.workId],
+    references: [works.id],
+  }),
   tags: many(articleTags),
   comments: many(comments),
 }));
@@ -387,5 +402,8 @@ export const commentsRelations = relations(comments, ({ one }) => ({
     fields: [comments.articleId],
     references: [articles.id],
   }),
-  author: one(users, { fields: [comments.authorId], references: [users.id] }),
+  author: one(users, {
+    fields: [comments.authorId],
+    references: [users.id],
+  }),
 }));

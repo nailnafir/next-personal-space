@@ -1,5 +1,5 @@
 {
-  "id": "4cb54542-7aa4-46ea-821a-a8c9579b92a6",
+  "id": "12058951-86dc-490d-b70c-b59dd1c135a2",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -88,21 +88,9 @@
           "primaryKey": true,
           "notNull": true
         },
-        "title": {
-          "name": "title",
-          "type": "varchar(200)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "subtitle": {
-          "name": "subtitle",
-          "type": "varchar(300)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "content": {
           "name": "content",
-          "type": "text",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
         },
@@ -120,24 +108,11 @@
           "notNull": false,
           "default": 0
         },
-        "thumbnail_url": {
-          "name": "thumbnail_url",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false
-        },
-        "author_id": {
-          "name": "author_id",
+        "work_id": {
+          "name": "work_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": false
-        },
-        "published": {
-          "name": "published",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": false,
-          "default": false
+          "notNull": true
         },
         "published_at": {
           "name": "published_at",
@@ -162,17 +137,17 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "articles_author_id_users_id_fk": {
-          "name": "articles_author_id_users_id_fk",
+        "articles_work_id_works_id_fk": {
+          "name": "articles_work_id_works_id_fk",
           "tableFrom": "articles",
-          "tableTo": "users",
+          "tableTo": "works",
           "columnsFrom": [
-            "author_id"
+            "work_id"
           ],
           "columnsTo": [
             "id"
           ],
-          "onDelete": "set null",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -779,7 +754,7 @@
         },
         "level": {
           "name": "level",
-          "type": "level",
+          "type": "skill_level",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
@@ -943,13 +918,13 @@
           "name": "category_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "type_id": {
           "name": "type_id",
           "type": "integer",
           "primaryKey": false,
-          "notNull": true
+          "notNull": false
         },
         "duration_in_days": {
           "name": "duration_in_days",
@@ -959,7 +934,7 @@
         },
         "status": {
           "name": "status",
-          "type": "status",
+          "type": "work_status",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
@@ -1036,13 +1011,11 @@
         }
       },
       "compositePrimaryKeys": {
-        "user_works_user_id_work_id_category_id_type_id_pk": {
-          "name": "user_works_user_id_work_id_category_id_type_id_pk",
+        "user_works_user_id_work_id_pk": {
+          "name": "user_works_user_id_work_id_pk",
           "columns": [
             "user_id",
-            "work_id",
-            "category_id",
-            "type_id"
+            "work_id"
           ]
         }
       },
@@ -1069,7 +1042,7 @@
         },
         "role": {
           "name": "role",
-          "type": "role",
+          "type": "user_role",
           "typeSchema": "public",
           "primaryKey": false,
           "notNull": true,
@@ -1288,8 +1261,8 @@
     }
   },
   "enums": {
-    "public.level": {
-      "name": "level",
+    "public.skill_level": {
+      "name": "skill_level",
       "schema": "public",
       "values": [
         "beginner",
@@ -1297,20 +1270,24 @@
         "expert"
       ]
     },
-    "public.role": {
-      "name": "role",
+    "public.user_role": {
+      "name": "user_role",
       "schema": "public",
       "values": [
         "user",
         "super-user"
       ]
     },
-    "public.status": {
-      "name": "status",
+    "public.work_status": {
+      "name": "work_status",
       "schema": "public",
       "values": [
         "pending",
-        "completed"
+        "completed",
+        "draft",
+        "published",
+        "archived",
+        "scheduled"
       ]
     }
   },

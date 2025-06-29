@@ -1,4 +1,4 @@
-import { db } from "@/lib/drizzle";
+import { db } from "@/lib/network/drizzle";
 import { apiResponse } from "@/lib/utils";
 import {
   interests,
@@ -6,7 +6,7 @@ import {
   userInterests,
   userSocials,
   users,
-} from "@/lib/database-schema";
+} from "@/lib/schema/database-schema";
 import { AboutModel } from "@/types/models";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
@@ -34,7 +34,8 @@ export async function GET() {
     const socialsData = await db
       .select({
         platform: socials.platform,
-        url: socials.url,
+        baseUrl: socials.baseUrl,
+        urlPrefix: socials.urlPrefix,
         iconUrl: socials.iconUrl,
         username: userSocials.username,
       })

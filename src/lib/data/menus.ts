@@ -32,11 +32,11 @@ export const articleMenus: MenuItem[] = [
   {
     icon: Network,
     title: "Tutorial",
-    href: "/tutorials",
+    href: "/articles/tutorials",
   },
   {
     icon: MessageSquare,
     title: "Diskusi",
-    href: "/discussions",
+    href: "/articles/discussions",
   },
 ];

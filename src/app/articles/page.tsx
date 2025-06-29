@@ -10,6 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { encodeId } from "@/lib/utils";
 
 type Article = {
   id: number;
@@ -71,7 +72,7 @@ export default function ArticlesPage() {
           ) : (
             <div className="flex flex-col gap-4">
               {filteredArticles.map((article) => (
-                <Link key={article.id} href={`/articles/${article.id}`}>
+                <Link key={article.id} href={`/articles/${encodeId(article.id)}`}>
                   <Card className="transition cursor-pointer hover:shadow-md">
                     <CardHeader>
                       <CardTitle>{article.title}</CardTitle>

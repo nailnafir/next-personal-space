@@ -1,6 +1,6 @@
-CREATE TYPE "public"."level" AS ENUM('beginner', 'intermediate', 'expert');--> statement-breakpoint
-CREATE TYPE "public"."role" AS ENUM('user', 'super-user');--> statement-breakpoint
-CREATE TYPE "public"."status" AS ENUM('pending', 'completed');--> statement-breakpoint
+CREATE TYPE "public"."skill_level" AS ENUM('beginner', 'intermediate', 'expert');--> statement-breakpoint
+CREATE TYPE "public"."user_role" AS ENUM('user', 'super-user');--> statement-breakpoint
+CREATE TYPE "public"."work_status" AS ENUM('pending', 'completed', 'draft', 'published', 'archived', 'scheduled');--> statement-breakpoint
 CREATE TABLE "article_tags" (
 	"article_id" integer NOT NULL,
 	"tag_id" integer NOT NULL,
@@ -11,14 +11,10 @@ CREATE TABLE "article_tags" (
 --> statement-breakpoint
 CREATE TABLE "articles" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"title" varchar(200) NOT NULL,
-	"subtitle" varchar(300) NOT NULL,
-	"content" text NOT NULL,
+	"content" jsonb NOT NULL,
 	"views" integer DEFAULT 0,
 	"likes" integer DEFAULT 0,
-	"thumbnail_url" text,
-	"author_id" integer,
-	"published" boolean DEFAULT false,
+	"work_id" integer NOT NULL,
 	"published_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
@@ -113,7 +109,7 @@ CREATE TABLE "user_skills" (
 	"user_id" integer NOT NULL,
 	"tool_id" integer NOT NULL,
 	"description" varchar(255),
-	"level" "level" DEFAULT 'beginner' NOT NULL,
+	"level" "skill_level" DEFAULT 'beginner' NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "user_skills_user_id_tool_id_pk" PRIMARY KEY("user_id","tool_id")
@@ -131,19 +127,19 @@ CREATE TABLE "user_socials" (
 CREATE TABLE "user_works" (
 	"user_id" integer NOT NULL,
 	"work_id" integer NOT NULL,
-	"category_id" integer NOT NULL,
-	"type_id" integer NOT NULL,
+	"category_id" integer,
+	"type_id" integer,
 	"duration_in_days" integer,
-	"status" "status" DEFAULT 'pending' NOT NULL,
+	"status" "work_status" DEFAULT 'pending' NOT NULL,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "user_works_user_id_work_id_category_id_type_id_pk" PRIMARY KEY("user_id","work_id","category_id","type_id")
+	CONSTRAINT "user_works_user_id_work_id_pk" PRIMARY KEY("user_id","work_id")
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"photo_url" text,
-	"role" "role" DEFAULT 'user' NOT NULL,
+	"role" "user_role" DEFAULT 'user' NOT NULL,
 	"email" varchar(100) NOT NULL,
 	"password" varchar(255) NOT NULL,
 	"name" varchar(255) NOT NULL,
@@ -177,7 +173,7 @@ CREATE TABLE "works" (
 --> statement-breakpoint
 ALTER TABLE "article_tags" ADD CONSTRAINT "article_tags_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "article_tags" ADD CONSTRAINT "article_tags_tag_id_tags_id_fk" FOREIGN KEY ("tag_id") REFERENCES "public"."tags"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "articles" ADD CONSTRAINT "articles_author_id_users_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "articles" ADD CONSTRAINT "articles_work_id_works_id_fk" FOREIGN KEY ("work_id") REFERENCES "public"."works"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "comments" ADD CONSTRAINT "comments_author_id_users_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_interests" ADD CONSTRAINT "user_interests_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

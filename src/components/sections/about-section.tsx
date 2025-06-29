@@ -4,7 +4,8 @@ import { ShineBorder } from "@/components/magicui/shine-border";
 import { LinkPreview } from "@/components/aceternity/link-preview";
 import { Button } from "@/components/ui/button";
 import { parseBoldUnderline } from "@/lib/helpers";
-import { fetchAbout } from "@/lib/client";
+import { readAbout } from "@/lib/network/endpoint";
+import { getSupabaseURL } from "@/lib/utils";
 import { AlertCircle, ArrowDown, RefreshCcw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -19,7 +20,7 @@ export default function AboutSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<AboutModel>("about", fetchAbout, {
+  } = useSWR<AboutModel>("about", readAbout, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -129,7 +130,7 @@ export default function AboutSection() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 mt-8">
                   {about?.socials.map((social, index) => (
-                    <LinkPreview key={index} url={`${social.url}${social.username}`}>
+                    <LinkPreview key={index} url={`${social.baseUrl}${social.urlPrefix}${social.username}`}>
                       <Card
                         data-cursor-target
                         key={index}
@@ -140,7 +141,7 @@ export default function AboutSection() {
                         />
                         <CardContent>
                           <Image
-                            src={`${social.iconUrl}`}
+                            src={`${getSupabaseURL(social.iconUrl)}`}
                             alt={social.platform}
                             width={32}
                             height={32}

@@ -2,10 +2,10 @@
 
 import Header from "@/components/header";
 import Footer from "@/components/footer";
-import InfoSection from "@/components/section/info-section";
-import AboutSection from "@/components/section/about-section";
-import WorksSection from "@/components/section/works-section";
-import SkillsSection from "@/components/section/skills-section";
+import InfoSection from "@/components/sections/info-section";
+import AboutSection from "@/components/sections/about-section";
+import WorksSection from "@/components/sections/works-section";
+import SkillsSection from "@/components/sections/skills-section";
 import FloatingIcons from "@/components/floating-icons";
 import FloatingTexts from "@/components/floating-texts";
 import BackgroundParticles from "@/components/background-particles";

@@ -1,6 +1,6 @@
-import { db } from "@/lib/drizzle";
+import { db } from "@/lib/network/drizzle";
 import { apiResponse } from "@/lib/utils";
-import { tools, users, userSkills } from "@/lib/database-schema";
+import { tools, users, userSkills } from "@/lib/schema/database-schema";
 import { SkillsModel } from "@/types/models";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";

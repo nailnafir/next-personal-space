@@ -1,10 +1,11 @@
 import { toast } from "sonner";
 import { WorksModel } from "@/types/models";
-import { fetchWorks } from "@/lib/client";
-import { useEffect, useRef, useState } from "react";
+import { readWorks } from "@/lib/network/endpoint";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { AlertCircle, ArrowUp, RefreshCcw } from "lucide-react";
-import { translateCategory, translateType } from "@/lib/utils";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
+import { AlertCircle, ArrowUp, RefreshCcw, X } from "lucide-react";
+import { getSupabaseURL } from "@/lib/utils";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -22,10 +23,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 import Image from "next/image";
 import Link from "next/link";
 import useSWR from "swr";
+import { ShineBorder } from "../magicui/shine-border";
 
 export default function WorksSection() {
   const {
@@ -33,51 +34,44 @@ export default function WorksSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<WorksModel[]>("works", fetchWorks, {
+  } = useSWR<WorksModel[]>("works", readWorks, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
 
-  const isFirstRender = useRef(true);
-
   const [category, setCategory] = useState<"all" | string>("all");
   const [type, setType] = useState<"all" | string>("all");
 
-  const categories =
-    (works?.length || 0) > 0
-      ? [
-          "all",
-          ...Array.from(new Set(works?.map((work) => work.category.name))),
-        ]
-      : ["all"];
+  const categories = [
+    ...new Set(works?.map((work) => work.category?.name) || []),
+  ];
 
-  const types =
-    (works?.length || 0) > 0
-      ? ["all", ...Array.from(new Set(works?.map((work) => work.type.name)))]
-      : ["all"];
+  const types = [...new Set(works?.map((work) => work.type?.name) || [])];
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
+    if (category === "all" && type === "all") {
       return;
     }
 
-    toast.info(
-      category === "all" && type === "all"
-        ? "Menampilkan semua karya"
-        : category !== "all" && type === "all"
-        ? `Menampilkan kategori: ${translateCategory(category)}`
-        : category === "all" && type !== "all"
-        ? `Menampilkan tipe: ${translateType(type)}`
-        : `Menampilkan kategori: ${translateCategory(
-            category
-          )} dan tipe: ${translateType(type)}`
-    );
+    const showFilterToast = () => {
+      if (category === "all" && type === "all") {
+        toast.info("Menampilkan semua karya");
+      } else if (category !== "all" && type === "all") {
+        toast.info(`Menampilkan kategori: ${category}`);
+      } else if (category === "all" && type !== "all") {
+        toast.info(`Menampilkan tipe: ${type}`);
+      } else {
+        toast.info(`Menampilkan kategori: ${category} dan tipe: ${type}`);
+      }
+    };
+
+    showFilterToast();
   }, [category, type]);
 
   const filteredWorks = works?.filter((work) => {
-    const matchCategory = category === "all" || work.category.name === category;
-    const matchType = type === "all" || work.type.name === type;
+    const matchCategory =
+      category === "all" || work.category?.name === category;
+    const matchType = type === "all" || work.type?.name === type;
 
     return matchCategory && matchType;
   });
@@ -136,37 +130,70 @@ export default function WorksSection() {
           ) : (
             !error && (
               <div className="flex flex-row justify-center gap-4 mb-6 overflow-auto">
-                <Select onValueChange={(value) => setCategory(value)}>
+                <Select
+                  value={category}
+                  onValueChange={(value) => setCategory(value)}
+                >
                   <SelectTrigger className="!bg-foreground !text-muted data-[placeholder]:!text-muted [&_svg:not([class*='text-'])]:!text-muted font-semibold rounded-full">
-                    <SelectValue placeholder="Kategori" />
+                    <SelectValue>
+                      {category === "all" ? "Semua Kategori" : category}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="bg-background/75 backdrop-blur">
                     <SelectGroup>
                       <SelectLabel>Kategori</SelectLabel>
-                      {categories.map((category) => (
-                        <SelectItem key={category} value={category}>
-                          {translateCategory(category)}
-                        </SelectItem>
-                      ))}
+                      {categories.map((category) => {
+                        if (!category) return null;
+
+                        return (
+                          <SelectItem key={category} value={category}>
+                            {category}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
 
-                <Select onValueChange={(value) => setType(value)}>
+                <Select value={type} onValueChange={(value) => setType(value)}>
                   <SelectTrigger className="!bg-foreground !text-muted data-[placeholder]:!text-muted [&_svg:not([class*='text-'])]:!text-muted font-semibold rounded-full">
-                    <SelectValue placeholder="Tipe" />
+                    <SelectValue>
+                      {type === "all" ? "Semua Tipe" : type}
+                    </SelectValue>
                   </SelectTrigger>
                   <SelectContent className="bg-background/75 backdrop-blur">
                     <SelectGroup>
                       <SelectLabel>Tipe</SelectLabel>
-                      {types.map((type) => (
-                        <SelectItem key={type} value={type}>
-                          {translateType(type)}
-                        </SelectItem>
-                      ))}
+                      {types.map((type) => {
+                        if (!type) return null;
+
+                        return (
+                          <SelectItem key={type} value={type}>
+                            {type}
+                          </SelectItem>
+                        );
+                      })}
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+
+                {(category !== "all" || type !== "all") && (
+                  <Button
+                    className="relative transition duration-300 rounded-full bg-primary-foreground hover:bg-primary-foreground/75"
+                    onClick={() => {
+                      setCategory("all");
+                      setType("all");
+
+                      toast.info("Pilihan dihapus. Menampilkan semua karya");
+                    }}
+                  >
+                    <ShineBorder
+                      shineColor={["#A07CFE", "#FE8FB5", "#FFBE7B"]}
+                    />
+                    <X className="w-4 h-4 text-primary" />
+                    <span className="text-primary">Hapus</span>
+                  </Button>
+                )}
               </div>
             )
           )}
@@ -263,9 +290,9 @@ export default function WorksSection() {
                     </p>
                     <p className="text-base text-muted-foreground">
                       Hasil pencarian kategori &apos;
-                      {translateCategory(category)}&apos; dan tipe &apos;
-                      {translateType(type)}&apos; kosong. Cari kategori dan tipe
-                      yang lain dulu ya
+                      {category}&apos; dan tipe &apos;
+                      {type}&apos; kosong. Cari kategori dan tipe yang lain dulu
+                      ya
                     </p>
                   </div>
                 </motion.div>
@@ -302,20 +329,20 @@ export default function WorksSection() {
                           </CardItem>
                           <CardItem translateZ="100" className="w-full mt-4">
                             <Image
-                              src={filteredWork.works.imageUrl}
+                              src={getSupabaseURL(filteredWork.works.imageUrl)}
                               alt={filteredWork.works.title}
                               height="300"
                               width="300"
-                              className="object-fill h-48 w-full rounded-xl group-hover/card:shadow-xl"
+                              className="object-fill w-full h-48 rounded-xl group-hover/card:shadow-xl"
                             />
                             <div className="flex flex-wrap justify-center gap-2 my-6">
-                              {filteredWork.tools.map((tools, indexTool) => (
+                              {filteredWork.tools?.map((tools, indexTool) => (
                                 <div
                                   key={`${indexTool}-${tools.name}`}
                                   className="px-4 py-2 rounded-full bg-foreground/10"
                                 >
                                   <Image
-                                    src={`${tools.iconUrl}`}
+                                    src={`${getSupabaseURL(tools.iconUrl)}`}
                                     alt={tools.name}
                                     height="50"
                                     width="50"
@@ -334,7 +361,7 @@ export default function WorksSection() {
                               className="w-full gap-2 transition duration-300 rounded-full bg-primary text-background"
                             >
                               <Link
-                                href={filteredWork.works.url}
+                                href={filteredWork.works.url || "#"}
                                 className="w-full"
                               >
                                 <ArrowUp className="text-background" />

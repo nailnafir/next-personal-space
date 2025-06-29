@@ -1,12 +1,13 @@
-import { db } from "@/lib/drizzle";
+import { db } from "@/lib/network/drizzle";
 import {
   categories,
   tools,
   types,
+  users,
   userWorks,
   works,
   workTools,
-} from "@/lib/database-schema";
+} from "@/lib/schema/database-schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { WorksModel, ToolItemModel } from "@/types/models";
@@ -14,6 +15,11 @@ import { apiResponse } from "@/lib/utils";
 
 export async function GET() {
   try {
+    const [superUser] = await db
+      .select({ id: users.id })
+      .from(users)
+      .where(eq(users.role, "super-user"));
+
     const worksDetailsData = await db
       .select({
         workId: userWorks.workId,
@@ -26,8 +32,9 @@ export async function GET() {
       })
       .from(userWorks)
       .innerJoin(works, eq(userWorks.workId, works.id))
-      .innerJoin(categories, eq(userWorks.categoryId, categories.id))
-      .innerJoin(types, eq(userWorks.typeId, types.id));
+      .leftJoin(categories, eq(userWorks.categoryId, categories.id))
+      .leftJoin(types, eq(userWorks.typeId, types.id))
+      .where(eq(userWorks.userId, superUser.id));
 
     const workToolsData = await db
       .select({
@@ -61,13 +68,9 @@ export async function GET() {
         imageUrl: work.imageUrl,
         url: work.url,
       },
-      category: {
-        name: work.categoryName,
-      },
-      type: {
-        name: work.typeName,
-      },
-      tools: groupedTools[work.workId] || [],
+      category: work.categoryName ? { name: work.categoryName } : null,
+      type: work.typeName ? { name: work.typeName } : null,
+      tools: groupedTools[work.workId] ? groupedTools[work.workId] : null,
     }));
 
     return NextResponse.json(apiResponse.ok(result));
