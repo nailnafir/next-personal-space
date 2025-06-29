@@ -3,7 +3,10 @@ import { apiResponse, decodeId } from "@/lib/utils";
 import { CommentItemModel } from "@/types/models";
 import { NextResponse } from "next/server";
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  _: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     const { id } = await params;
     const resultId = decodeId(id);
