@@ -1,6 +1,6 @@
 import { toast } from "sonner";
-import { WorksModel } from "@/types/models";
-import { readWorks } from "@/lib/network/endpoint";
+import { WorksResponse } from "@/model/models";
+import { readWorks } from "@/lib/service/endpoints";
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { DotLottieReact } from "@lottiefiles/dotlottie-react";
@@ -34,7 +34,7 @@ export default function WorksSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<WorksModel[]>("works", readWorks, {
+  } = useSWR<WorksResponse[]>("works", readWorks, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -247,7 +247,7 @@ export default function WorksSection() {
                     className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
                   >
                     <AlertCircle className="!size-24 mb-8 animate-pulse" />
-                    <AlertTitle className="w-full text-3xl font-bold">
+                    <AlertTitle className="flex-col items-center justify-center w-full text-3xl font-bold">
                       Terjadi Kesalahan
                     </AlertTitle>
                     <AlertDescription className="flex flex-col items-center justify-center text-base">

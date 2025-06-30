@@ -4,12 +4,12 @@ import { ShineBorder } from "@/components/magicui/shine-border";
 import { LinkPreview } from "@/components/aceternity/link-preview";
 import { Button } from "@/components/ui/button";
 import { parseBoldUnderline } from "@/lib/helpers";
-import { readAbout } from "@/lib/network/endpoint";
+import { readAbout } from "@/lib/service/endpoints";
 import { getSupabaseURL } from "@/lib/utils";
 import { AlertCircle, ArrowDown, RefreshCcw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AboutModel } from "@/types/models";
+import { AboutResponse } from "@/model/models";
 import { toast } from "sonner";
 import useSWR from "swr";
 import Image from "next/image";
@@ -20,7 +20,7 @@ export default function AboutSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<AboutModel>("about", readAbout, {
+  } = useSWR<AboutResponse>("about", readAbout, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -100,7 +100,7 @@ export default function AboutSection() {
                   className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
                 >
                   <AlertCircle className="!size-24 mb-8 animate-pulse" />
-                  <AlertTitle className="w-full text-3xl font-bold">
+                  <AlertTitle className="flex-col items-center justify-center w-full text-3xl font-bold">
                     Terjadi Kesalahan
                   </AlertTitle>
                   <AlertDescription className="flex flex-col items-center justify-center text-base">

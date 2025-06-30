@@ -1,4 +1,4 @@
-import { db } from "@/lib/network/drizzle";
+import { db } from "@/lib/service/drizzle";
 import { apiResponse } from "@/lib/utils";
 import {
   jobs,
@@ -7,7 +7,7 @@ import {
   types,
   userWorks,
 } from "@/lib/schema/database-schema";
-import { InfoModel } from "@/types/models";
+import { InfoResponse } from "@/model/models";
 import { count, eq, desc } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -50,7 +50,7 @@ export async function GET() {
       .groupBy(types.name)
       .orderBy(desc(count(userWorks.workId)));
 
-    const result: InfoModel = {
+    const result: InfoResponse = {
       user: {
         name: user.name,
         photoUrl: user.photoUrl,

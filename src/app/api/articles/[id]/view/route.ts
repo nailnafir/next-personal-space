@@ -1,5 +1,5 @@
 import { articles } from "@/lib/schema/database-schema";
-import { db } from "@/lib/network/drizzle";
+import { db } from "@/lib/service/drizzle";
 import { apiResponse, decodeId } from "@/lib/utils";
 import { eq, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";

@@ -10,8 +10,8 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { ShineBorder } from "@/components/magicui/shine-border";
 import { cn } from "@/lib/utils";
-import { InfoModel } from "@/types/models";
-import { readInfo } from "@/lib/network/endpoint";
+import { InfoResponse } from "@/model/models";
+import { readInfo } from "@/lib/service/endpoints";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import TypeWriter from "@/components/type-writer";
@@ -29,7 +29,7 @@ export default function InfoSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<InfoModel>("info", readInfo, {
+  } = useSWR<InfoResponse>("info", readInfo, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -99,7 +99,7 @@ export default function InfoSection() {
           className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
         >
           <AlertCircle className="!size-24 mb-8 animate-pulse" />
-          <AlertTitle className="w-full text-3xl font-bold">
+          <AlertTitle className="flex-col items-center justify-center w-full text-3xl font-bold">
             Terjadi Kesalahan
           </AlertTitle>
           <AlertDescription className="flex flex-col items-center justify-center text-base">

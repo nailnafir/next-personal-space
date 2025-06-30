@@ -1,4 +1,4 @@
-import { db } from "@/lib/network/drizzle";
+import { db } from "@/lib/service/drizzle";
 import { comments } from "@/lib/schema/database-schema";
 import { NextResponse } from "next/server";
 import { commentSchema } from "@/lib/schema/form-schema";

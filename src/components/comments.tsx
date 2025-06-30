@@ -1,17 +1,23 @@
 "use client";
 
-import { JSX } from "react";
+import { FormEvent, JSX } from "react";
 import { Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CommentItemModel, SendCommentPayload } from "@/types/models";
-import { formatTimeRelativeIndonesia } from "@/lib/utils";
+import { CommentItemResponse, SendCommentRequest } from "@/model/models";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { commentSchema } from "@/lib/schema/form-schema";
-import { createComment } from "@/lib/network/endpoint";
+import { createComment } from "@/lib/service/endpoints";
 import { toast } from "sonner";
 import { ParamValue } from "next/dist/server/request/params";
+import { services } from "@/lib/service/services";
+import { Skeleton } from "@/components/ui/skeleton";
+import {
+  formatTimeRelativeIndonesia,
+  getInitialName,
+  getSupabaseURL,
+} from "@/lib/utils";
 import {
   Form,
   FormControl,
@@ -30,8 +36,6 @@ import {
 import z from "zod";
 import useSWRMutation from "swr/mutation";
 import useSWR from "swr";
-import { service } from "@/lib/network/service";
-import { Skeleton } from "./ui/skeleton";
 
 interface CommentsProps {
   articleId: ParamValue;
@@ -43,17 +47,17 @@ export default function Comments({
   authorId = null,
 }: CommentsProps): JSX.Element {
   const {
-    data: commentsData,
+    data: comments,
     mutate: refreshComments,
     isLoading,
-  } = useSWR<CommentItemModel[]>(
+  } = useSWR<CommentItemResponse[]>(
     `/api/articles/${articleId}/comments`,
-    service
+    services
   );
 
   const { trigger: submitComment, isMutating } = useSWRMutation(
     `/api/articles/${articleId}/comments`,
-    async (_key, { arg }: { arg: SendCommentPayload }) => {
+    async (_key, { arg }: { arg: SendCommentRequest }) => {
       return await createComment(arg);
     }
   );
@@ -67,9 +71,16 @@ export default function Comments({
     },
   });
 
-  const onSubmit = form.handleSubmit(async ({ content }) => {
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+
+    const isValid = await form.trigger();
+    if (!isValid) return;
+
+    const { content } = form.getValues();
+
     try {
-      const payload: SendCommentPayload = {
+      const payload: SendCommentRequest = {
         articleId,
         content,
         authorId,
@@ -87,12 +98,12 @@ export default function Comments({
           error instanceof Error ? error.message : "Masalah tidak diketahui",
       });
     }
-  });
+  };
 
   return (
     <Card className="sticky transition-all duration-300 border rounded-lg shadow-sm bg-background top-24">
       <CardHeader>
-        <CardTitle>Komentar ({commentsData?.length || 0})</CardTitle>
+        <CardTitle>Komentar ({comments?.length || 0})</CardTitle>
         <CardDescription>
           Diskusi dengan pembaca lain tentang artikel ini
         </CardDescription>
@@ -141,25 +152,38 @@ export default function Comments({
           <div className="pt-4 mt-4 space-y-4 overflow-y-auto border-t max-h-96">
             {Array.from({ length: 3 }).map((_, index) => (
               <div key={index} className="flex space-x-3 animate-pulse">
-                <div className="flex-shrink-0">
-                  <Skeleton className="w-10 h-10 rounded-full" />
-                </div>
+                <Skeleton className="w-8 h-8 rounded-full" />
                 <div className="flex-1 space-y-2">
-                  <Skeleton className="w-1/4 h-4 rounded" />
-                  <Skeleton className="w-3/4 h-3 rounded" />
+                  <Skeleton className="w-1/2 h-4 rounded" />
+                  <Skeleton className="w-full h-3 rounded" />
                 </div>
+                <Skeleton className="w-1/4 h-4 rounded" />
               </div>
             ))}
           </div>
         ) : (
           <div className="pt-4 mt-4 space-y-4 overflow-y-auto border-t max-h-96">
-            {commentsData?.map((comment, index) => (
+            {isMutating && (
+              <div className="flex space-x-3 animate-pulse">
+                <Skeleton className="w-8 h-8 rounded-full" />
+                <div className="flex-1 space-y-2">
+                  <Skeleton className="w-1/2 h-4 rounded" />
+                  <Skeleton className="w-full h-3 rounded" />
+                </div>
+                <Skeleton className="w-1/4 h-4 rounded" />
+              </div>
+            )}
+            {comments?.map((comment, index) => (
               <div key={index} className="flex space-x-3">
                 <div className="flex-shrink-0">
                   <Avatar>
-                    <AvatarImage src={comment.author?.photoUrl || undefined} />
+                    <AvatarImage
+                      src={getSupabaseURL(comment.author?.photoUrl)}
+                    />
                     <AvatarFallback>
-                      <span className="text-xs">PM</span>
+                      <span className="text-xs">
+                        {getInitialName(comment.author?.name)}
+                      </span>
                     </AvatarFallback>
                   </Avatar>
                 </div>

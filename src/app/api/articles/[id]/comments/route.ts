@@ -1,6 +1,6 @@
-import { db } from "@/lib/network/drizzle";
+import { db } from "@/lib/service/drizzle";
 import { apiResponse, decodeId } from "@/lib/utils";
-import { CommentItemModel } from "@/types/models";
+import { CommentItemResponse } from "@/model/models";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -30,7 +30,7 @@ export async function GET(
       orderBy: (comment, { desc }) => [desc(comment.createdAt)],
     });
 
-    const result: CommentItemModel[] = comments.map((comment) => ({
+    const result: CommentItemResponse[] = comments.map((comment) => ({
       content: comment.content,
       createdAt: comment.createdAt?.toISOString(),
       author: {

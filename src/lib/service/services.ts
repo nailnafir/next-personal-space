@@ -1,6 +1,6 @@
-import { ApiResult } from "@/types/models";
+import { ApiResult } from "@/model/models";
 
-export const service = async <T>(
+export const services = async <T>(
   url: string,
   init?: RequestInit
 ): Promise<T> => {

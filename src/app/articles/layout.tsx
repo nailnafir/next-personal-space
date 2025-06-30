@@ -8,7 +8,7 @@ export default function ArticlesLayout({
 }>) {
   return (
     <div className="relative min-h-screen overflow-visible select-none">
-      <Header variant="articles" />
+      <Header />
       {children}
       <Footer />
     </div>

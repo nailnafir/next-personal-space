@@ -5,8 +5,8 @@ import { LinkPreview } from "@/components/aceternity/link-preview";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { SkillsModel } from "@/types/models";
-import { readSkills } from "@/lib/network/endpoint";
+import { SkillsResponse } from "@/model/models";
+import { readSkills } from "@/lib/service/endpoints";
 import { parseBoldUnderline } from "@/lib/helpers";
 import { getSupabaseURL } from "@/lib/utils";
 import { AlertCircle, RefreshCcw } from "lucide-react";
@@ -20,7 +20,7 @@ export default function SkillsSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<SkillsModel>("skills", readSkills, {
+  } = useSWR<SkillsResponse>("skills", readSkills, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -100,7 +100,7 @@ export default function SkillsSection() {
                   className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
                 >
                   <AlertCircle className="!size-24 mb-8 animate-pulse" />
-                  <AlertTitle className="w-full text-3xl font-bold">
+                  <AlertTitle className="flex-col items-center justify-center w-full text-3xl font-bold">
                     Terjadi Kesalahan
                   </AlertTitle>
                   <AlertDescription className="flex flex-col items-center justify-center text-base">

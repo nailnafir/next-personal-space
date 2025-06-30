@@ -42,7 +42,7 @@ export function SubscribeForm() {
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col max-w-md gap-2 sm:flex-row"
+          className="flex flex-row max-w-md gap-2"
         >
           <FormField
             control={form.control}

@@ -9,8 +9,8 @@ import Comments from "@/components/comments";
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { ArticleItemModel } from "@/types/models";
-import { readArticleId, updateArticleViews } from "@/lib/network/endpoint";
+import { ArticleItemResponse } from "@/model/models";
+import { readArticleId, updateArticleViews } from "@/lib/service/endpoints";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, ClipboardCopy, RefreshCcw, Share2 } from "lucide-react";
@@ -43,7 +43,9 @@ export default function ArticleDetailsPage() {
 
     incrementViews()
       .then(() => sessionStorage.setItem(key, "true"))
-      .catch((error: unknown) => console.error("Gagal update views:", error));
+      .catch((error: unknown) =>
+        console.error("Gagal memperbarui views:", error)
+      );
   }, [incrementViews, id]);
 
   const {
@@ -51,7 +53,7 @@ export default function ArticleDetailsPage() {
     error,
     isLoading,
     mutate,
-  } = useSWR<ArticleItemModel>(`article-${id}`, () => readArticleId(id), {
+  } = useSWR<ArticleItemResponse>(`article-${id}`, () => readArticleId(id), {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -85,28 +87,30 @@ export default function ArticleDetailsPage() {
 
   return (
     <div className="transition-all duration-300 bg-background">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto max-w-7xl max-sm:mx-4">
         {isLoading ? (
           <div className="grid grid-cols-12 gap-8 py-6">
-            {/* Left TOC */}
+            {/* Left Table Of Contents */}
             <aside className="hidden space-y-4 lg:block lg:col-span-3">
               <Skeleton className="w-full h-12 rounded-xl" />
-              <Skeleton className="w-full h-64 rounded-xl" />
+              <Skeleton className="w-full h-96 rounded-xl" />
             </aside>
 
             {/* Main Content */}
             <main className="col-span-12 space-y-6 lg:col-span-6">
+              <Skeleton className="w-full h-10" />
               <Skeleton className="w-3/4 h-10" />
-              <Skeleton className="w-1/2 h-6" />
-              <div className="flex pt-6 mt-6 space-x-4 border-t">
-                <div className="flex flex-row justify-between w-full gap-4">
-                  {[...Array(4)].map((_, index) => (
-                    <Skeleton key={index} className="w-1/4 h-6" />
+              <Skeleton className="w-full h-6" />
+              <Skeleton className="w-3/4 h-6" />
+              <div className="flex py-6 my-6 space-x-4 border-t border-b">
+                <div className="flex flex-wrap items-center justify-center w-full gap-4 sm:justify-between">
+                  {[...Array(6)].map((_, index) => (
+                    <Skeleton key={index} className="w-1/5 h-6 sm:w-1/7" />
                   ))}
                 </div>
               </div>
 
-              {/* Simulate few sections */}
+              {/* Sections */}
               {[...Array(4)].map((_, index) => (
                 <div key={index} className="pt-6 space-y-3">
                   <Skeleton className="w-3/4 h-6" />
@@ -116,6 +120,11 @@ export default function ArticleDetailsPage() {
                 </div>
               ))}
             </main>
+
+            {/* Right Comments */}
+            <aside className="hidden space-y-4 lg:block lg:col-span-3">
+              <Skeleton className="w-full h-96 rounded-xl" />
+            </aside>
           </div>
         ) : error ? (
           <Alert
@@ -123,7 +132,7 @@ export default function ArticleDetailsPage() {
             className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
           >
             <AlertCircle className="!size-24 mb-8 animate-pulse" />
-            <AlertTitle className="w-full text-3xl font-bold">
+            <AlertTitle className="flex-col items-center justify-center w-full text-3xl font-bold">
               Terjadi Kesalahan
             </AlertTitle>
             <AlertDescription className="flex flex-col items-center justify-center text-base">
@@ -172,64 +181,60 @@ export default function ArticleDetailsPage() {
             </aside>
 
             {/* Main content in the center */}
-            <main className="col-span-12 lg:col-span-6">
-              <div className="mb-8">
-                <h1 className="mb-4 text-4xl font-bold">{article?.title}</h1>
-                <p className="text-xl leading-relaxed text-muted-foreground">
-                  {article?.subtitle}
-                </p>
-                <div className="flex items-center pt-6 mt-6 border-t">
-                  <div className="flex items-center justify-between w-full text-sm font-light text-muted-foreground">
-                    <div className="flex items-center space-x-4">
-                      <span>
-                        {article?.author?.name || "Penulis tidak dikenal"}
-                      </span>
-                      <span>•</span>
-                      <span>
-                        {formatDateTimeIndonesia(article?.publishedAt, "date")}
-                      </span>
-                      <span>•</span>
-                      <span>{article?.likes || 0} Suka</span>
-                      <span>•</span>
-                      <span>{article?.views || 0} Dibaca</span>
-                    </div>
-                    <div className="flex items-center space-x-4">
-                      <Button
-                        size="sm"
-                        className="transition duration-300 rounded-full bg-primary hover:bg-primary/75"
-                        onClick={() => {
-                          navigator.clipboard.writeText(window.location.href);
-                          toast.success("Link artikel berhasil disalin!");
-                        }}
-                      >
-                        <ClipboardCopy className="w-4 h-4 text-primary-foreground" />
-                        <span className="text-primary-foreground">Salin</span>
-                      </Button>
+            <main className="col-span-12 mb-8 lg:col-span-6">
+              <h1 className="mb-4 text-4xl font-bold">{article?.title}</h1>
+              <p className="text-xl leading-relaxed text-muted-foreground">
+                {article?.subtitle}
+              </p>
+              <div className="flex items-center py-6 my-6 border-t border-b">
+                <div className="flex flex-wrap items-center justify-center w-full text-sm font-light sm:justify-between text-muted-foreground">
+                  <div className="flex items-center space-x-4 text-center">
+                    <span>
+                      {article?.author?.name || "Penulis tidak dikenal"}
+                    </span>
+                    <span>•</span>
+                    <span>
+                      {formatDateTimeIndonesia(article?.publishedAt, "date")}
+                    </span>
+                    <span>•</span>
+                    <span>{article?.likes || 0} Suka</span>
+                    <span>•</span>
+                    <span>{article?.views || 0} Dibaca</span>
+                  </div>
+                  <div className="flex items-center space-x-4 max-sm:mt-4">
+                    <Button
+                      size="sm"
+                      className="transition duration-300 rounded-full bg-primary hover:bg-primary/75"
+                      onClick={() => {
+                        navigator.clipboard.writeText(window.location.href);
+                        toast.success("Link artikel berhasil disalin!");
+                      }}
+                    >
+                      <ClipboardCopy className="w-4 h-4 text-primary-foreground" />
+                      <span className="text-primary-foreground">Salin</span>
+                    </Button>
 
-                      <Button
-                        size="sm"
-                        className="transition duration-300 rounded-full bg-primary hover:bg-primary/75"
-                        onClick={() => {
-                          if (navigator.share) {
-                            navigator
-                              .share({
-                                title: article?.title || "Artikel",
-                                url: window.location.href,
-                              })
-                              .catch(() =>
-                                toast.error("Gagal membagikan link")
-                              );
-                          } else {
-                            toast.warning(
-                              "Fitur bagikan tidak didukung di browser ini"
-                            );
-                          }
-                        }}
-                      >
-                        <Share2 className="w-4 h-4 text-primary-foreground" />
-                        <span className="text-primary-foreground">Bagikan</span>
-                      </Button>
-                    </div>
+                    <Button
+                      size="sm"
+                      className="transition duration-300 rounded-full bg-primary hover:bg-primary/75"
+                      onClick={() => {
+                        if (navigator.share) {
+                          navigator
+                            .share({
+                              title: article?.title || "Artikel",
+                              url: window.location.href,
+                            })
+                            .catch(() => toast.error("Gagal membagikan link"));
+                        } else {
+                          toast.warning(
+                            "Fitur bagikan tidak didukung di browser ini"
+                          );
+                        }
+                      }}
+                    >
+                      <Share2 className="w-4 h-4 text-primary-foreground" />
+                      <span className="text-primary-foreground">Bagikan</span>
+                    </Button>
                   </div>
                 </div>
               </div>
@@ -310,11 +315,8 @@ export default function ArticleDetailsPage() {
             </main>
 
             {/* Comments section on the right */}
-            <aside className="hidden lg:block lg:col-span-3">
-              <Comments
-                articleId={id}
-                authorId={article?.author?.id}
-              />
+            <aside className="block col-span-12 sm:col-span-3">
+              <Comments articleId={id} authorId={article?.author?.id} />
             </aside>
           </div>
         )}

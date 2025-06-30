@@ -10,7 +10,7 @@ import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { format, formatDistanceToNow } from "date-fns";
 import { id } from "date-fns/locale";
-import { SuccessResponse, FailedResponse } from "@/types/models";
+import { SuccessResponse, FailedResponse } from "@/model/models";
 import Hashids from "hashids";
 
 export function cn(...inputs: ClassValue[]) {
@@ -80,6 +80,24 @@ export function getSocialIcon(platform: string): IconType {
     default:
       throw new Error(`Icon platform "${platform}" belum dibikin`);
   }
+}
+
+export function getCopyrightYear() {
+  const projectYear = 2020;
+  const currentYear = new Date().getFullYear();
+
+  return projectYear === currentYear
+    ? `©${currentYear}.`
+    : `©${projectYear} - ${currentYear}.`;
+}
+
+export function getInitialName(name: string | null | undefined): string {
+  const safeName = name?.trim() || "Pengguna Misterius";
+  const words = safeName.split(" ");
+
+  if (words.length === 1) return words[0].slice(0, 2).toUpperCase();
+
+  return (words[0][0] + words[1][0]).toUpperCase();
 }
 
 export function formatTimeRelativeIndonesia(

@@ -1,26 +1,21 @@
 "use client";
 
-import { mainMenus } from "@/lib/data/menus";
-import { readAbout } from "@/lib/network/endpoint";
-import { AboutModel } from "@/types/models";
+import { articleMenus, mainMenus } from "@/lib/data/menus";
+import { readAbout } from "@/lib/service/endpoints";
+import { AboutResponse } from "@/model/models";
 import { setups } from "@/lib/data/setup";
 import { SubscribeForm } from "@/components/subscribe-form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { usePathname } from "next/navigation";
+import { getCopyrightYear } from "@/lib/utils";
 import Logo from "@/components/logo";
 import Link from "next/link";
 import useSWR from "swr";
 
 export default function Footer() {
-  const getCopyrightYear = () => {
-    const projectYear = 2020;
-    const currentYear = new Date().getFullYear();
+  const path = usePathname();
 
-    return projectYear === currentYear
-      ? `©${currentYear}.`
-      : `©${projectYear} - ${currentYear}.`;
-  };
-
-  const { data: about, isLoading } = useSWR<AboutModel>("about", readAbout, {
+  const { data: about, isLoading } = useSWR<AboutResponse>("about", readAbout, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -72,21 +67,35 @@ export default function Footer() {
           <div className="grid grid-cols-1 gap-10 px-4 md:grid-cols-4 sm:px-32">
             {/* Me */}
             <div className="space-y-4">
-              <Logo />
+              <div className="mb-6">
+                <Logo />
+              </div>
               <h3 className="p-1 mb-4 font-semibold">Menu</h3>
               <div className="flex space-x-2">
                 <ul className="space-y-2 text-sm">
-                  {mainMenus.map((menu, index) => (
-                    <li key={index}>
-                      <Link
-                        data-cursor-target
-                        href={`#${menu.title.toLowerCase()}`}
-                        className="p-1 transition text-muted-foreground/75 hover:text-foreground"
-                      >
-                        {menu.title}
-                      </Link>
-                    </li>
-                  ))}
+                  {path.includes("articles")
+                    ? articleMenus.map((menu, index) => (
+                        <li key={index}>
+                          <Link
+                            data-cursor-target
+                            href={`#${menu.title.toLowerCase()}`}
+                            className="p-1 transition text-muted-foreground/75 hover:text-foreground"
+                          >
+                            {menu.title}
+                          </Link>
+                        </li>
+                      ))
+                    : mainMenus.map((menu, index) => (
+                        <li key={index}>
+                          <Link
+                            data-cursor-target
+                            href={`#${menu.title.toLowerCase()}`}
+                            className="p-1 transition text-muted-foreground/75 hover:text-foreground"
+                          >
+                            {menu.title}
+                          </Link>
+                        </li>
+                      ))}
                 </ul>
               </div>
             </div>

@@ -1,7 +1,7 @@
-import { db } from "@/lib/network/drizzle";
+import { db } from "@/lib/service/drizzle";
 import { apiResponse } from "@/lib/utils";
 import { tools, users, userSkills } from "@/lib/schema/database-schema";
-import { SkillsModel } from "@/types/models";
+import { SkillsResponse } from "@/model/models";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -35,7 +35,7 @@ export async function GET() {
       .innerJoin(tools, eq(userSkills.toolId, tools.id))
       .where(eq(userSkills.userId, superUser.userId));
 
-    const result: SkillsModel = {
+    const result: SkillsResponse = {
       user: {
         story: user.story,
       },

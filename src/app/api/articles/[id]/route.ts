@@ -1,11 +1,11 @@
-import { db } from "@/lib/network/drizzle";
+import { db } from "@/lib/service/drizzle";
 import { apiResponse, decodeId } from "@/lib/utils";
 import { NextResponse } from "next/server";
 import {
   ArticleContentModel,
-  ArticleItemModel,
+  ArticleItemResponse,
   WorkStatusEnum,
-} from "@/types/models";
+} from "@/model/models";
 
 export async function GET(
   _: Request,
@@ -61,7 +61,7 @@ export async function GET(
       });
     }
 
-    const result: ArticleItemModel = {
+    const result: ArticleItemResponse = {
       title: article?.work?.title,
       subtitle: article?.work?.description,
       thumbnailUrl: article?.work?.imageUrl,

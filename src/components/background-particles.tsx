@@ -15,7 +15,9 @@ type BackgroundParticlesProps = {
   children: ReactNode;
 };
 
-export default function BackgroundParticles({ children }: BackgroundParticlesProps) {
+export default function BackgroundParticles({
+  children,
+}: BackgroundParticlesProps) {
   const { theme } = useTheme();
   const [init, setInit] = useState(false);
 
@@ -54,7 +56,6 @@ export default function BackgroundParticles({ children }: BackgroundParticlesPro
           value: backgroundColor,
         },
       },
-      fpsLimit: 120,
       interactivity: {
         events: {
           onClick: { enable: false },
@@ -62,7 +63,7 @@ export default function BackgroundParticles({ children }: BackgroundParticlesPro
         },
         modes: {
           push: { quantity: 4 },
-          repulse: { distance: 200, duration: 0.4 },
+          repulse: { distance: 150, duration: 0.4 },
         },
       },
       particles: {
@@ -71,7 +72,7 @@ export default function BackgroundParticles({ children }: BackgroundParticlesPro
           color: linksColor,
           distance: 150,
           enable: true,
-          opacity: 0.5,
+          opacity: 0.4,
           width: 4,
         },
         move: {
@@ -84,11 +85,12 @@ export default function BackgroundParticles({ children }: BackgroundParticlesPro
           density: { enable: true },
           value: 50,
         },
-        opacity: { value: 0.5 },
+        opacity: { value: 0.4 },
         shape: { type: "circle" },
-        size: { value: { min: 1, max: 5 } },
+        size: { value: { min: 1, max: 4 } },
       },
       detectRetina: true,
+      smooth: true,
     }),
     [backgroundColor, linksColor, particlesColor]
   );

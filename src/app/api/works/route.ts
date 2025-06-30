@@ -1,4 +1,4 @@
-import { db } from "@/lib/network/drizzle";
+import { db } from "@/lib/service/drizzle";
 import {
   categories,
   tools,
@@ -10,7 +10,7 @@ import {
 } from "@/lib/schema/database-schema";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
-import { WorksModel, ToolItemModel } from "@/types/models";
+import { WorksResponse, ToolItemModel } from "@/model/models";
 import { apiResponse } from "@/lib/utils";
 
 export async function GET() {
@@ -61,7 +61,7 @@ export async function GET() {
       {}
     );
 
-    const result: WorksModel[] = worksDetailsData.map((work) => ({
+    const result: WorksResponse[] = worksDetailsData.map((work) => ({
       works: {
         title: work.title,
         description: work.description,
