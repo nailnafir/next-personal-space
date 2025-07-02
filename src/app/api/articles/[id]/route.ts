@@ -61,6 +61,7 @@ export async function GET(
     }
 
     const result: ArticleItemResponse = {
+      id: article?.id,
       title: article?.work?.title,
       subtitle: article?.work?.description,
       thumbnailUrl: article?.work?.imageUrl,
