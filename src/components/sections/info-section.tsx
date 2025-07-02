@@ -29,34 +29,23 @@ export default function InfoSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<InfoResponse>("info", readInfo, {
+  } = useSWR<InfoResponse>("/api/info", readInfo, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
 
   const handleRetry = async () => {
-    const toastId = "retry-toast";
+    const retryPromise = () => mutate();
 
-    try {
-      toast.loading("Menghubungkan", {
-        id: toastId,
-        description: "Tunggu sebentar, lagi coba hubungin ke server dulu",
-      });
-
-      await mutate();
-
-      toast.success("Berhasil", {
-        id: toastId,
-        description: "Udah terhubung ke server, data udah tampil!",
-      });
-    } catch (error) {
-      toast.error("Kesalahan", {
-        id: toastId,
-        description: `Servernya gak mau terhubung, ada masalah: ${
+    toast.promise(retryPromise, {
+      loading: "Menghubungkan...",
+      success: "Berhasil terhubung ke server, data udah tampil!",
+      error: (error) => {
+        return `Servernya gak mau terhubung, ada masalah: ${
           error instanceof Error ? error.message : "Masalah tidak diketahui"
-        }`,
-      });
-    }
+        }`;
+      },
+    });
   };
 
   useEffect(() => {
@@ -156,7 +145,10 @@ export default function InfoSection() {
           >
             {isLoading
               ? Array.from({ length: 3 }).map((_, indexIcon) => (
-                  <Skeleton key={indexIcon} className="w-full h-28 rounded-xl" />
+                  <Skeleton
+                    key={indexIcon}
+                    className="w-full h-28 rounded-xl"
+                  />
                 ))
               : info?.types.map((info, index) => (
                   <Card

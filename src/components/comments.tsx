@@ -8,10 +8,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { commentSchema } from "@/lib/schema/form-schema";
-import { createComment } from "@/lib/service/endpoints";
+import { createComment, readComments } from "@/lib/service/endpoints";
 import { toast } from "sonner";
 import { ParamValue } from "next/dist/server/request/params";
-import { services } from "@/lib/service/services";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   formatTimeRelativeIndonesia,
@@ -52,13 +51,17 @@ export default function Comments({
     isLoading,
   } = useSWR<CommentItemResponse[]>(
     `/api/articles/${articleId}/comments`,
-    services
+    () => readComments(articleId),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
   const { trigger: submitComment, isMutating } = useSWRMutation(
-    `/api/articles/${articleId}/comments`,
+    "/api/articles/comments",
     async (_key, { arg }: { arg: SendCommentRequest }) => {
-      return await createComment(arg);
+      return await createComment(articleId, arg);
     }
   );
 
@@ -75,23 +78,23 @@ export default function Comments({
     e.preventDefault();
 
     const isValid = await form.trigger();
+
     if (!isValid) return;
 
     const { content } = form.getValues();
 
     try {
-      const payload: SendCommentRequest = {
+      await submitComment({
         articleId,
         content,
         authorId,
-      };
-
-      await submitComment(payload);
-
-      toast.success("Komentar berhasil dikirim!");
-      form.reset();
+      });
 
       await refreshComments();
+      
+      toast.success("Komentar berhasil dikirim!");
+      
+      form.reset();
     } catch (error) {
       toast.error("Tidak dapat kirim komentar", {
         description:
@@ -142,66 +145,73 @@ export default function Comments({
                 <Send className="w-4 h-4 text-primary-foreground" />
               )}
               <span className="text-primary-foreground">
-                {isMutating ? "Mengirim..." : "Kirim Komentar"}
+                {isMutating ? "Mengirim..." : "Kirim"}
               </span>
             </Button>
           </form>
         </Form>
 
         {isLoading ? (
-          <div className="pt-4 mt-4 space-y-4 overflow-y-auto border-t max-h-96">
-            {Array.from({ length: 3 }).map((_, index) => (
-              <div key={index} className="flex space-x-3 animate-pulse">
-                <Skeleton className="w-8 h-8 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="w-1/2 h-4 rounded" />
-                  <Skeleton className="w-full h-3 rounded" />
+          <div className="relative py-4 mt-4 border-t">
+            <div className="absolute inset-x-0 z-10 h-4 transition duration-300 pointer-events-none top-4 bg-gradient-to-b from-background to-transparent" />
+            <div className="absolute inset-x-0 z-10 h-4 transition duration-300 pointer-events-none bottom-4 bg-gradient-to-t from-background to-transparent" />
+
+            <div className="py-6 space-y-4 overflow-y-auto max-h-96">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="flex space-x-3 animate-pulse">
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="w-1/2 h-4 rounded" />
+                    <Skeleton className="w-full h-3 rounded" />
+                  </div>
+                  <Skeleton className="w-1/4 h-4 rounded" />
                 </div>
-                <Skeleton className="w-1/4 h-4 rounded" />
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         ) : (
-          <div className="pt-4 mt-4 space-y-4 overflow-y-auto border-t max-h-96">
-            {isMutating && (
-              <div className="flex space-x-3 animate-pulse">
-                <Skeleton className="w-8 h-8 rounded-full" />
-                <div className="flex-1 space-y-2">
-                  <Skeleton className="w-1/2 h-4 rounded" />
-                  <Skeleton className="w-full h-3 rounded" />
-                </div>
-                <Skeleton className="w-1/4 h-4 rounded" />
-              </div>
-            )}
-            {comments?.map((comment, index) => (
-              <div key={index} className="flex space-x-3">
-                <div className="flex-shrink-0">
-                  <Avatar>
-                    <AvatarImage
-                      src={getSupabaseURL(comment.author?.photoUrl)}
-                    />
-                    <AvatarFallback>
-                      <span className="text-xs">
-                        {getInitialName(comment.author?.name)}
-                      </span>
-                    </AvatarFallback>
-                  </Avatar>
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center mb-1 space-x-2">
-                    <h4 className="text-sm font-medium text-foreground">
-                      {comment.author?.name || "Pengguna Misterius"}
-                    </h4>
-                    <span className="text-xs font-light text-right text-muted-foreground">
-                      {formatTimeRelativeIndonesia(comment.createdAt)}
-                    </span>
+          <div className="relative py-4 mt-4 border-t">
+            <div className="absolute inset-x-0 z-10 h-6 transition duration-300 pointer-events-none top-4 bg-gradient-to-b from-background via-background/75 to-transparent" />
+            <div className="absolute inset-x-0 z-10 h-6 transition duration-300 pointer-events-none bottom-4 bg-gradient-to-t from-background via-background/75 to-transparent" />
+            <div className="py-6 space-y-4 overflow-y-auto max-h-96">
+              {isMutating && (
+                <div className="flex space-x-3 animate-pulse">
+                  <Skeleton className="w-8 h-8 rounded-full" />
+                  <div className="flex-1 space-y-2">
+                    <Skeleton className="w-1/2 h-4 rounded" />
+                    <Skeleton className="w-full h-3 rounded" />
                   </div>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {comment.content}
-                  </p>
+                  <Skeleton className="w-1/4 h-4 rounded" />
                 </div>
-              </div>
-            ))}
+              )}
+              {comments?.map((comment, index) => (
+                <div key={index} className="flex space-x-3">
+                  <div className="flex-shrink-0">
+                    <Avatar>
+                      <AvatarImage
+                        src={getSupabaseURL(comment.author?.photoUrl)}
+                      />
+                      <AvatarFallback className="text-xs">
+                        {getInitialName(comment.author?.name)}
+                      </AvatarFallback>
+                    </Avatar>
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center mb-1 space-x-2">
+                      <h4 className="text-sm font-medium text-foreground">
+                        {comment.author?.name || "Pengguna Misterius"}
+                      </h4>
+                      <span className="text-xs font-light text-right text-muted-foreground">
+                        {formatTimeRelativeIndonesia(comment.createdAt)}
+                      </span>
+                    </div>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {comment.content}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
       </CardContent>

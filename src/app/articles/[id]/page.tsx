@@ -30,7 +30,7 @@ export default function ArticleDetailsPage() {
   const { id } = useParams();
 
   const { trigger: incrementViews } = useSWRMutation(
-    `article-${id}-increment-views`,
+    `/api/articles/${id}/view`,
     async () => await updateArticleViews(id)
   );
 
@@ -53,37 +53,30 @@ export default function ArticleDetailsPage() {
     error,
     isLoading,
     mutate,
-  } = useSWR<ArticleItemResponse>(`article-${id}`, () => readArticleId(id), {
-    revalidateOnFocus: false,
-    revalidateOnReconnect: false,
-  });
-
-  const handleRetry = async () => {
-    const toastId = "retry-toast";
-
-    try {
-      toast.loading("Menghubungkan", {
-        id: toastId,
-        description: "Tunggu sebentar, lagi coba hubungin ke server dulu",
-      });
-
-      await mutate();
-
-      toast.success("Berhasil", {
-        id: toastId,
-        description: "Udah terhubung ke server, data udah tampil!",
-      });
-    } catch (error) {
-      toast.error("Kesalahan", {
-        id: toastId,
-        description: `Servernya gak mau terhubung, ada masalah: ${
-          error instanceof Error ? error.message : "Masalah tidak diketahui"
-        }`,
-      });
+  } = useSWR<ArticleItemResponse>(
+    `/api/articles/${id}`,
+    () => readArticleId(id),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
     }
-  };
+  );
 
   const sections = article?.content.map((section) => section.title);
+
+  const handleRetry = async () => {
+    const retryPromise = () => mutate();
+
+    toast.promise(retryPromise, {
+      loading: "Menghubungkan...",
+      success: "Berhasil terhubung ke server, data udah tampil!",
+      error: (error) => {
+        return `Servernya gak mau terhubung, ada masalah: ${
+          error instanceof Error ? error.message : "Masalah tidak diketahui"
+        }`;
+      },
+    });
+  };
 
   return (
     <div className="transition-all duration-300 bg-background">
@@ -207,7 +200,7 @@ export default function ArticleDetailsPage() {
                       className="transition duration-300 rounded-full bg-primary hover:bg-primary/75"
                       onClick={() => {
                         navigator.clipboard.writeText(window.location.href);
-                        toast.success("Link artikel berhasil disalin!");
+                        toast.success("Tautan artikel berhasil disalin!");
                       }}
                     >
                       <ClipboardCopy className="w-4 h-4 text-primary-foreground" />

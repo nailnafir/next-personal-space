@@ -34,7 +34,7 @@ export default function WorksSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<WorksResponse[]>("works", readWorks, {
+  } = useSWR<WorksResponse[]>("/api/works", readWorks, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
@@ -77,28 +77,17 @@ export default function WorksSection() {
   });
 
   const handleRetry = async () => {
-    const toastId = "retry-toast";
+    const retryPromise = () => mutate();
 
-    try {
-      toast.loading("Menghubungkan", {
-        id: toastId,
-        description: "Tunggu sebentar, lagi coba hubungin ke server dulu",
-      });
-
-      await mutate();
-
-      toast.success("Berhasil", {
-        id: toastId,
-        description: "Udah terhubung ke server, data udah tampil!",
-      });
-    } catch (error) {
-      toast.error("Kesalahan", {
-        id: toastId,
-        description: `Servernya gak mau terhubung, ada masalah: ${
+    toast.promise(retryPromise, {
+      loading: "Menghubungkan...",
+      success: "Berhasil terhubung ke server, data udah tampil!",
+      error: (error) => {
+        return `Servernya gak mau terhubung, ada masalah: ${
           error instanceof Error ? error.message : "Masalah tidak diketahui"
-        }`,
-      });
-    }
+        }`;
+      },
+    });
   };
 
   return (

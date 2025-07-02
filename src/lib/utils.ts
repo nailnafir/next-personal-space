@@ -141,7 +141,7 @@ export function getSupabaseURL(path: string | undefined | null) {
     return url;
   }
 
-  return `${url}/${path}`;
+  return `${url}${path}`;
 }
 
 export function encodeId(id: number) {

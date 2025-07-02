@@ -26,9 +26,7 @@ export function SubscribeForm() {
   });
 
   const onSubmit = (values: z.infer<typeof subscribeSchema>) => {
-    toast.success("Berhasil dikirim", {
-      description: `Email '${values.email}' udah didaftarin`,
-    });
+    toast.success(`Berhasil daftarin '${values.email}' ke server`);
 
     form.reset();
   };

@@ -20,34 +20,23 @@ export default function AboutSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<AboutResponse>("about", readAbout, {
+  } = useSWR<AboutResponse>("/api/about", readAbout, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
 
   const handleRetry = async () => {
-    const toastId = "retry-toast";
+    const retryPromise = () => mutate();
 
-    try {
-      toast.loading("Menghubungkan", {
-        id: toastId,
-        description: "Tunggu sebentar, lagi coba hubungin ke server dulu",
-      });
-
-      await mutate();
-
-      toast.success("Berhasil", {
-        id: toastId,
-        description: "Udah terhubung ke server, data udah tampil!",
-      });
-    } catch (error) {
-      toast.error("Kesalahan", {
-        id: toastId,
-        description: `Servernya gak mau terhubung, ada masalah: ${
+    toast.promise(retryPromise, {
+      loading: "Menghubungkan...",
+      success: "Berhasil terhubung ke server, data udah tampil!",
+      error: (error) => {
+        return `Servernya gak mau terhubung, ada masalah: ${
           error instanceof Error ? error.message : "Masalah tidak diketahui"
-        }`,
-      });
-    }
+        }`;
+      },
+    });
   };
 
   return (
@@ -130,7 +119,10 @@ export default function AboutSection() {
                 </p>
                 <div className="flex flex-wrap justify-center gap-4 mt-8">
                   {about?.socials.map((social, index) => (
-                    <LinkPreview key={index} url={`${social.baseUrl}${social.urlPrefix}${social.username}`}>
+                    <LinkPreview
+                      key={index}
+                      url={`${social.baseUrl}${social.urlPrefix}${social.username}`}
+                    >
                       <Card
                         data-cursor-target
                         key={index}

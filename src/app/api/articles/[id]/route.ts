@@ -4,7 +4,6 @@ import { NextResponse } from "next/server";
 import {
   ArticleContentModel,
   ArticleItemResponse,
-  WorkStatusEnum,
 } from "@/model/models";
 
 export async function GET(
@@ -68,7 +67,7 @@ export async function GET(
       content: article?.content as ArticleContentModel,
       views: article?.views,
       likes: article?.likes,
-      status: article?.work?.users?.[0]?.status as WorkStatusEnum,
+      status: article?.work?.users?.[0]?.status,
       publishedAt: article?.publishedAt?.toISOString(),
       createdAt: article?.createdAt?.toISOString(),
       updatedAt: article?.updatedAt?.toISOString(),

@@ -1,6 +1,7 @@
 import {
   AboutResponse,
   ArticleItemResponse,
+  ArticlesResponse,
   CommentItemResponse,
   InfoResponse,
   SendCommentRequest,
@@ -26,6 +27,12 @@ export const readInfo = async (): Promise<InfoResponse> => {
   return services("/api/info");
 };
 
+export const readArticles = async (
+  query: string
+): Promise<ArticlesResponse> => {
+  return services(`/api/articles?${query}`);
+};
+
 export const readArticleId = async (
   articleId: ParamValue
 ): Promise<ArticleItemResponse> => {
@@ -35,18 +42,24 @@ export const readArticleId = async (
 export const updateArticleViews = async (
   articleId: ParamValue
 ): Promise<ArticleItemResponse> => {
-  return services(`/api/articles/${articleId}/view`, { method: "PATCH" });
+  return services(`/api/articles/${articleId}/views`, { method: "PATCH" });
 };
 
 export const readComments = async (
   articleId: ParamValue
-): Promise<CommentItemResponse> => {
+): Promise<CommentItemResponse[]> => {
   return services(`/api/articles/${articleId}/comments`);
 };
 
-export const createComment = async (payload: SendCommentRequest) => {
-  return services<CommentItemResponse>(`/api/articles/comments`, {
-    method: "POST",
-    body: JSON.stringify(payload),
-  });
+export const createComment = async (
+  articleId: ParamValue,
+  payload: SendCommentRequest
+) => {
+  return services<CommentItemResponse>(
+    `/api/articles/${articleId}/comments/create`,
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    }
+  );
 };

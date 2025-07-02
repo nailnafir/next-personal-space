@@ -10,7 +10,7 @@ export const commentSchema = z.object({
   }),
   content: z
     .string()
-    .min(1, { message: "Komentar terlalu pendek" })
+    .min(1, { message: "Komentar wajib diisi" })
     .max(255, { message: "Komentar maksimal 255 karakter" }),
   authorId: z.number().nullable().optional(),
 });

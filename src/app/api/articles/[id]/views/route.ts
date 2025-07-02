@@ -15,7 +15,7 @@ export async function PATCH(
   const resultId = Number(decodedId);
 
   if (!resultId) {
-    return NextResponse.json(apiResponse.error("ID tidak valid"), {
+    return NextResponse.json(apiResponse.error("Kode artikel tidak valid"), {
       status: 400,
     });
   }

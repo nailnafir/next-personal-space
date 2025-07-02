@@ -20,34 +20,23 @@ export default function SkillsSection() {
     error,
     isLoading,
     mutate,
-  } = useSWR<SkillsResponse>("skills", readSkills, {
+  } = useSWR<SkillsResponse>("/api/skills", readSkills, {
     revalidateOnFocus: false,
     revalidateOnReconnect: false,
   });
 
   const handleRetry = async () => {
-    const toastId = "retry-toast";
+    const retryPromise = () => mutate();
 
-    try {
-      toast.loading("Menghubungkan", {
-        id: toastId,
-        description: "Tunggu sebentar, lagi coba hubungin ke server dulu",
-      });
-
-      await mutate();
-
-      toast.success("Berhasil", {
-        id: toastId,
-        description: "Udah terhubung ke server, data udah tampil!",
-      });
-    } catch (error) {
-      toast.error("Kesalahan", {
-        id: toastId,
-        description: `Servernya gak mau terhubung, ada masalah: ${
+    toast.promise(retryPromise, {
+      loading: "Menghubungkan...",
+      success: "Berhasil terhubung ke server, data udah tampil!",
+      error: (error) => {
+        return `Servernya gak mau terhubung, ada masalah: ${
           error instanceof Error ? error.message : "Masalah tidak diketahui"
-        }`,
-      });
-    }
+        }`;
+      },
+    });
   };
 
   return (
