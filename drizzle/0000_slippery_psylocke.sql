@@ -1,6 +1,23 @@
 CREATE TYPE "public"."skill_level" AS ENUM('beginner', 'intermediate', 'expert');--> statement-breakpoint
 CREATE TYPE "public"."user_role" AS ENUM('user', 'super-user');--> statement-breakpoint
 CREATE TYPE "public"."work_status" AS ENUM('pending', 'completed', 'draft', 'published', 'archived', 'scheduled');--> statement-breakpoint
+CREATE TABLE "article_comments" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"article_id" integer NOT NULL,
+	"user_id" integer,
+	"content" text NOT NULL,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "article_likes" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"article_id" integer NOT NULL,
+	"user_id" integer,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE "article_tags" (
 	"article_id" integer NOT NULL,
 	"tag_id" integer NOT NULL,
@@ -9,11 +26,17 @@ CREATE TABLE "article_tags" (
 	CONSTRAINT "article_tags_article_id_tag_id_pk" PRIMARY KEY("article_id","tag_id")
 );
 --> statement-breakpoint
+CREATE TABLE "article_views" (
+	"id" serial PRIMARY KEY NOT NULL,
+	"article_id" integer NOT NULL,
+	"user_id" integer,
+	"created_at" timestamp DEFAULT now(),
+	"updated_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 CREATE TABLE "articles" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"content" jsonb NOT NULL,
-	"views" integer DEFAULT 0,
-	"likes" integer DEFAULT 0,
 	"work_id" integer NOT NULL,
 	"published_at" timestamp,
 	"created_at" timestamp DEFAULT now(),
@@ -26,15 +49,6 @@ CREATE TABLE "categories" (
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "categories_name_unique" UNIQUE("name")
-);
---> statement-breakpoint
-CREATE TABLE "comments" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"article_id" integer NOT NULL,
-	"author_id" integer,
-	"content" text NOT NULL,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "interests" (
@@ -171,11 +185,15 @@ CREATE TABLE "works" (
 	"updated_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
+ALTER TABLE "article_comments" ADD CONSTRAINT "article_comments_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "article_comments" ADD CONSTRAINT "article_comments_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "article_likes" ADD CONSTRAINT "article_likes_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "article_likes" ADD CONSTRAINT "article_likes_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "article_tags" ADD CONSTRAINT "article_tags_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "article_tags" ADD CONSTRAINT "article_tags_tag_id_tags_id_fk" FOREIGN KEY ("tag_id") REFERENCES "public"."tags"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "article_views" ADD CONSTRAINT "article_views_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "article_views" ADD CONSTRAINT "article_views_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "articles" ADD CONSTRAINT "articles_work_id_works_id_fk" FOREIGN KEY ("work_id") REFERENCES "public"."works"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "comments" ADD CONSTRAINT "comments_article_id_articles_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."articles"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "comments" ADD CONSTRAINT "comments_author_id_users_id_fk" FOREIGN KEY ("author_id") REFERENCES "public"."users"("id") ON DELETE set null ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_interests" ADD CONSTRAINT "user_interests_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_interests" ADD CONSTRAINT "user_interests_interest_id_interests_id_fk" FOREIGN KEY ("interest_id") REFERENCES "public"."interests"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "user_jobs" ADD CONSTRAINT "user_jobs_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint

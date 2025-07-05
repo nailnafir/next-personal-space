@@ -1,17 +1,13 @@
 import { db } from "@/lib/service/drizzle";
 import { apiResponse, decodeId } from "@/lib/utils";
 import { NextResponse } from "next/server";
-import {
-  ArticleContentModel,
-  ArticleItemResponse,
-} from "@/model/models";
+import { ArticleContentModel, ArticleItemResponse } from "@/model/models";
 
 export async function GET(
   _: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    // 8gwKVKBkdOpQ
     const { id } = await params;
     const resultId = decodeId(id);
 
@@ -66,8 +62,6 @@ export async function GET(
       subtitle: article?.work?.description,
       thumbnailUrl: article?.work?.imageUrl,
       content: article?.content as ArticleContentModel,
-      views: article?.views,
-      likes: article?.likes,
       status: article?.work?.users?.[0]?.status,
       publishedAt: article?.publishedAt?.toISOString(),
       createdAt: article?.createdAt?.toISOString(),

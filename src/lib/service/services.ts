@@ -12,11 +12,21 @@ export const services = async <T>(
     ...init,
   });
 
-  if (!res.ok) throw new Error("Ada masalah saat ambil data");
+  let json: ApiResult<T>;
 
-  const json: ApiResult<T> = await res.json();
+  try {
+    json = await res.json();
+  } catch (error) {
+    throw new Error(
+      error instanceof Error
+        ? `${error.message}`
+        : "Tidak dapat menerima response dari server"
+    );
+  }
 
-  if (json.status === "failed") throw new Error(json.message);
+  if (!res.ok || json.status === "failed") {
+    throw new Error(json.message || "Server bermasalah");
+  }
 
   return json.data;
 };

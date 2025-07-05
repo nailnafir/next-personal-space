@@ -1,22 +1,32 @@
 "use client";
 
-import { FormEvent, JSX } from "react";
-import { Loader2, Send } from "lucide-react";
+import { FormEvent, JSX, useEffect, useState } from "react";
+import { Heart, Loader2, Send } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { CommentItemResponse, SendCommentRequest } from "@/model/models";
+import {
+  CommentsResponse,
+  LikeItemResponse,
+  SendCommentRequest,
+} from "@/model/models";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { commentSchema } from "@/lib/schema/form-schema";
-import { createComment, readComments } from "@/lib/service/endpoints";
 import { toast } from "sonner";
 import { ParamValue } from "next/dist/server/request/params";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
+  cn,
   formatTimeRelativeIndonesia,
   getInitialName,
   getSupabaseURL,
 } from "@/lib/utils";
+import {
+  createArticleComment,
+  createArticleLikes,
+  readArticleComments,
+  readArticleLikes,
+} from "@/lib/service/endpoints";
 import {
   Form,
   FormControl,
@@ -24,14 +34,7 @@ import {
   FormItem,
   FormMessage,
 } from "@/components/ui/form";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import z from "zod";
 import useSWRMutation from "swr/mutation";
 import useSWR from "swr";
@@ -41,17 +44,31 @@ interface CommentsProps {
   authorId?: number | null;
 }
 
-export default function Comments({
+export default function LikesComments({
   articleId,
   authorId = null,
 }: CommentsProps): JSX.Element {
+  const { data: likes, mutate: refreshLikes } = useSWR<LikeItemResponse>(
+    `/api/articles/${articleId}/likes`,
+    () => readArticleLikes(articleId, authorId),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
+  );
+
+  const { trigger: changeLikes } = useSWRMutation(
+    `/api/articles/${articleId}/likes/action`,
+    async () => await createArticleLikes(articleId, authorId)
+  );
+
   const {
     data: comments,
     mutate: refreshComments,
-    isLoading,
-  } = useSWR<CommentItemResponse[]>(
+    isLoading: loadingComments,
+  } = useSWR<CommentsResponse>(
     `/api/articles/${articleId}/comments`,
-    () => readComments(articleId),
+    () => readArticleComments(articleId),
     {
       revalidateOnFocus: false,
       revalidateOnReconnect: false,
@@ -59,9 +76,9 @@ export default function Comments({
   );
 
   const { trigger: submitComment, isMutating } = useSWRMutation(
-    "/api/articles/comments",
+    `/api/articles/${articleId}/comments/create`,
     async (_key, { arg }: { arg: SendCommentRequest }) => {
-      return await createComment(articleId, arg);
+      return await createArticleComment(articleId, arg);
     }
   );
 
@@ -74,11 +91,21 @@ export default function Comments({
     },
   });
 
-  const onSubmit = async (e: FormEvent) => {
+  const [isLiked, setIsLiked] = useState<boolean>(false);
+
+  useEffect(() => {
+    const isLikedArticle =
+      likes?.likedByUser ||
+      (typeof window !== "undefined" &&
+        localStorage.getItem(`isLikedArticle_${articleId}`) === "YES");
+
+    setIsLiked(isLikedArticle);
+  }, [articleId, likes?.likedByUser]);
+
+  const actionComments = async (e: FormEvent) => {
     e.preventDefault();
 
     const isValid = await form.trigger();
-
     if (!isValid) return;
 
     const { content } = form.getValues();
@@ -91,9 +118,7 @@ export default function Comments({
       });
 
       await refreshComments();
-      
-      toast.success("Komentar berhasil dikirim!");
-      
+      toast.success("Sip! Berhasil kirim komentar");
       form.reset();
     } catch (error) {
       toast.error("Tidak dapat kirim komentar", {
@@ -103,56 +128,101 @@ export default function Comments({
     }
   };
 
+  const actionLikes = async (e: FormEvent) => {
+    e.preventDefault();
+
+    try {
+      if (!isLiked) {
+        setIsLiked(true);
+
+        if (!authorId) {
+          localStorage.setItem(`isLikedArticle_${articleId}`, "YES");
+        }
+
+        await changeLikes();
+        await refreshLikes();
+
+        toast.success("Sip! Artikel disukai");
+      } else if (isLiked && authorId) {
+        setIsLiked(false);
+
+        localStorage.removeItem(`isLikedArticle_${articleId}`);
+
+        await changeLikes();
+        await refreshLikes();
+
+        toast.success("Sip! Batal suka artikel");
+      } else {
+        toast.warning("Masuk dulu kalo mau batal sukai artikel");
+      }
+    } catch (error) {
+      toast.error("Tidak dapat menyukai artikel", {
+        description:
+          error instanceof Error ? error.message : "Masalah tidak diketahui",
+      });
+    }
+  };
+
   return (
-    <Card className="sticky transition-all duration-300 border rounded-lg shadow-sm bg-background top-24">
-      <CardHeader>
-        <CardTitle>Komentar ({comments?.length || 0})</CardTitle>
-        <CardDescription>
-          Diskusi dengan pembaca lain tentang artikel ini
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={onSubmit} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="content"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <textarea
-                      {...field}
-                      placeholder="Ketik komentar disini...."
-                      maxLength={255}
-                      rows={3}
-                      disabled={isMutating}
-                      className="w-full p-3 border rounded-md resize-none focus:ring-2 focus:ring-foreground focus:border-transparent"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <Card className="!py-0 sticky transition-all duration-300 border rounded-lg shadow-sm bg-background top-24">
+      <CardContent className="pt-6">
+        <div className="flex flex-row justify-between pb-6">
+          <h3 className="text-lg font-semibold">
+            Suka ({likes?.totalLikes || 0})
+          </h3>
+          <Heart
+            onClick={actionLikes}
+            className={cn(
+              "w-5 h-5 cursor-pointer transition duration-300 hover:scale-110",
+              isLiked ? "fill-foreground text-foreground" : "text-muted-foreground"
+            )}
+          />
+        </div>
+        <div className="flex flex-col gap-2 py-6 border-t border-b">
+          <h3 className="text-lg font-semibold">
+            Komentar ({comments?.totalComments || 0})
+          </h3>
+          <Form {...form}>
+            <form onSubmit={actionComments} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="content"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <textarea
+                        {...field}
+                        placeholder="Ketik komentar disini...."
+                        maxLength={255}
+                        rows={3}
+                        disabled={isMutating}
+                        className="w-full p-3 border rounded-md resize-none focus:ring-2 focus:ring-foreground focus:border-transparent"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <Button
-              type="submit"
-              disabled={isMutating}
-              className="flex items-center w-full gap-2 px-4 py-2 text-sm transition duration-300 rounded-full bg-primary hover:bg-primary/75 disabled:opacity-50"
-            >
-              {isMutating ? (
-                <Loader2 className="w-4 h-4 text-primary-foreground animate-spin" />
-              ) : (
-                <Send className="w-4 h-4 text-primary-foreground" />
-              )}
-              <span className="text-primary-foreground">
-                {isMutating ? "Mengirim..." : "Kirim"}
-              </span>
-            </Button>
-          </form>
-        </Form>
-
-        {isLoading ? (
-          <div className="relative py-4 mt-4 border-t">
+              <Button
+                type="submit"
+                disabled={isMutating}
+                className="flex items-center w-full gap-2 px-4 py-2 text-sm transition duration-300 rounded-full bg-primary hover:bg-primary/75 disabled:opacity-50"
+              >
+                {isMutating ? (
+                  <Loader2 className="w-4 h-4 text-primary-foreground animate-spin" />
+                ) : (
+                  <Send className="w-4 h-4 text-primary-foreground" />
+                )}
+                <span className="text-primary-foreground">
+                  {isMutating ? "Mengirim..." : "Kirim"}
+                </span>
+              </Button>
+            </form>
+          </Form>
+        </div>
+        {loadingComments ? (
+          <div className="relative py-2">
             <div className="absolute inset-x-0 z-10 h-4 transition duration-300 pointer-events-none top-4 bg-gradient-to-b from-background to-transparent" />
             <div className="absolute inset-x-0 z-10 h-4 transition duration-300 pointer-events-none bottom-4 bg-gradient-to-t from-background to-transparent" />
 
@@ -170,7 +240,7 @@ export default function Comments({
             </div>
           </div>
         ) : (
-          <div className="relative py-4 mt-4 border-t">
+          <div className="relative py-2">
             <div className="absolute inset-x-0 z-10 h-6 transition duration-300 pointer-events-none top-4 bg-gradient-to-b from-background via-background/75 to-transparent" />
             <div className="absolute inset-x-0 z-10 h-6 transition duration-300 pointer-events-none bottom-4 bg-gradient-to-t from-background via-background/75 to-transparent" />
             <div className="py-6 space-y-4 overflow-y-auto max-h-96">
@@ -184,7 +254,7 @@ export default function Comments({
                   <Skeleton className="w-1/4 h-4 rounded" />
                 </div>
               )}
-              {comments?.map((comment, index) => (
+              {comments?.comments.map((comment, index) => (
                 <div key={index} className="flex space-x-3">
                   <div className="flex-shrink-0">
                     <Avatar>
@@ -215,9 +285,6 @@ export default function Comments({
           </div>
         )}
       </CardContent>
-      <CardFooter>
-        Semua komentar ditulis oleh pembaca dan tidak mewakili penulis
-      </CardFooter>
     </Card>
   );
 }

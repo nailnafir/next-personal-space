@@ -3,9 +3,12 @@ import {
   ArticleItemResponse,
   ArticlesResponse,
   CommentItemResponse,
+  CommentsResponse,
   InfoResponse,
+  LikeItemResponse,
   SendCommentRequest,
   SkillsResponse,
+  ViewItemResponse,
   WorksResponse,
 } from "@/model/models";
 import { ParamValue } from "next/dist/server/request/params";
@@ -39,19 +42,65 @@ export const readArticleId = async (
   return services(`/api/articles/${articleId}`);
 };
 
-export const updateArticleViews = async (
-  articleId: ParamValue
-): Promise<ArticleItemResponse> => {
-  return services(`/api/articles/${articleId}/views`, { method: "PATCH" });
+export const readArticleViews = async (
+  articleId: ParamValue,
+  authorId?: number | null
+): Promise<ViewItemResponse> => {
+  return services(`/api/articles/${articleId}/views`, {
+    method: "POST",
+    body: JSON.stringify({
+      articleId,
+      authorId,
+    }),
+  });
 };
 
-export const readComments = async (
+export const readArticleLikes = async (
+  articleId: ParamValue,
+  authorId?: number | null
+): Promise<LikeItemResponse> => {
+  return services(`/api/articles/${articleId}/likes`, {
+    method: "POST",
+    body: JSON.stringify({
+      articleId,
+      authorId,
+    }),
+  });
+};
+
+export const readArticleComments = async (
   articleId: ParamValue
-): Promise<CommentItemResponse[]> => {
+): Promise<CommentsResponse> => {
   return services(`/api/articles/${articleId}/comments`);
 };
 
-export const createComment = async (
+export const createArticleViews = async (
+  articleId: ParamValue,
+  authorId?: number | null
+): Promise<ViewItemResponse> => {
+  return services(`/api/articles/${articleId}/views/create`, {
+    method: "POST",
+    body: JSON.stringify({
+      articleId,
+      authorId,
+    }),
+  });
+};
+
+export const createArticleLikes = async (
+  articleId: ParamValue,
+  authorId?: number | null
+): Promise<LikeItemResponse> => {
+  return services(`/api/articles/${articleId}/likes/action`, {
+    method: "POST",
+    body: JSON.stringify({
+      articleId,
+      authorId,
+    }),
+  });
+};
+
+export const createArticleComment = async (
   articleId: ParamValue,
   payload: SendCommentRequest
 ) => {

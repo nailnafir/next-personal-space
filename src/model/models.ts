@@ -87,10 +87,25 @@ export interface SendCommentRequest {
   authorId?: number | null;
 }
 
+export interface CommentsResponse {
+  comments: CommentItemResponse[];
+  totalComments: number;
+}
+
 export interface CommentItemResponse {
   content: string;
   createdAt?: string | null;
   author?: AuthorItemModel | null;
+}
+
+export interface LikeItemResponse {
+  totalLikes: number;
+  likedByUser: boolean;
+}
+
+export interface ViewItemResponse {
+  totalViews: number;
+  viewedByUser: boolean;
 }
 
 export interface AuthorItemModel {
@@ -104,8 +119,6 @@ export interface ArticleItemResponse {
   title?: string | null;
   subtitle?: string | null;
   content: ArticleContentModel;
-  views?: number | null;
-  likes?: number | null;
   thumbnailUrl?: string | null;
   status?:
     | "pending"

@@ -1,6 +1,6 @@
 import { db } from "@/lib/service/drizzle";
 import { apiResponse, decodeId } from "@/lib/utils";
-import { CommentItemResponse } from "@/model/models";
+import { CommentsResponse } from "@/model/models";
 import { NextResponse } from "next/server";
 
 export async function GET(
@@ -17,10 +17,10 @@ export async function GET(
       });
     }
 
-    const comments = await db.query.comments.findMany({
+    const comments = await db.query.articleComments.findMany({
       where: (comment, { eq }) => eq(comment.articleId, resultId),
       with: {
-        author: {
+        user: {
           columns: {
             name: true,
             photoUrl: true,
@@ -30,14 +30,17 @@ export async function GET(
       orderBy: (comment, { desc }) => [desc(comment.createdAt)],
     });
 
-    const result: CommentItemResponse[] = comments.map((comment) => ({
-      content: comment.content,
-      createdAt: comment.createdAt?.toISOString(),
-      author: {
-        name: comment.author?.name || null,
-        photoUrl: comment.author?.photoUrl || null,
-      },
-    }));
+    const result: CommentsResponse = {
+      comments: comments.map((comment) => ({
+        content: comment.content,
+        createdAt: comment.createdAt?.toISOString(),
+        author: {
+          name: comment.user?.name || null,
+          photoUrl: comment.user?.photoUrl || null,
+        },
+      })),
+      totalComments: comments.length,
+    };
 
     return NextResponse.json(apiResponse.ok(result));
   } catch (error) {

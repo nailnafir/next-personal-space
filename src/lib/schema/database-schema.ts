@@ -256,8 +256,6 @@ export const articleTags = pgTable(
 export const articles = pgTable("articles", {
   id: serial("id").primaryKey(),
   content: jsonb("content").notNull(),
-  views: integer("views").default(0),
-  likes: integer("likes").default(0),
   workId: integer("work_id")
     .references(() => works.id, { onDelete: "cascade" })
     .notNull(),
@@ -266,15 +264,39 @@ export const articles = pgTable("articles", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const comments = pgTable("comments", {
+export const articleComments = pgTable("article_comments", {
   id: serial("id").primaryKey(),
   articleId: integer("article_id")
     .references(() => articles.id, { onDelete: "cascade" })
     .notNull(),
-  authorId: integer("author_id").references(() => users.id, {
+  userId: integer("user_id").references(() => users.id, {
     onDelete: "set null",
   }),
   content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const articleLikes = pgTable("article_likes", {
+  id: serial("id").primaryKey(),
+  articleId: integer("article_id")
+    .references(() => articles.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: integer("user_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const articleViews = pgTable("article_views", {
+  id: serial("id").primaryKey(),
+  articleId: integer("article_id")
+    .references(() => articles.id, { onDelete: "cascade" })
+    .notNull(),
+  userId: integer("user_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -286,7 +308,9 @@ export const usersRelations = relations(users, ({ many }) => ({
   skills: many(userSkills),
   works: many(userWorks),
   articles: many(articles),
-  comments: many(comments),
+  articleComments: many(articleComments),
+  articleLikes: many(articleLikes),
+  articleViews: many(articleViews),
 }));
 
 export const interestsRelations = relations(interests, ({ many }) => ({
@@ -394,16 +418,40 @@ export const articlesRelations = relations(articles, ({ one, many }) => ({
     references: [works.id],
   }),
   tags: many(articleTags),
-  comments: many(comments),
+  comments: many(articleComments),
+  views: many(articleViews),
+  likes: many(articleLikes),
 }));
 
-export const commentsRelations = relations(comments, ({ one }) => ({
+export const articleCommentsRelations = relations(
+  articleComments,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [articleComments.userId],
+      references: [users.id],
+    }),
+    article: one(articles, {
+      fields: [articleComments.articleId],
+      references: [articles.id],
+    }),
+  })
+);
+
+export const articleLikesRelations = relations(articleLikes, ({ one }) => ({
+  user: one(users, {
+    fields: [articleLikes.userId],
+    references: [users.id],
+  }),
   article: one(articles, {
-    fields: [comments.articleId],
+    fields: [articleLikes.articleId],
     references: [articles.id],
   }),
-  author: one(users, {
-    fields: [comments.authorId],
-    references: [users.id],
+}));
+
+export const articleViewsRelations = relations(articleViews, ({ one }) => ({
+  user: one(users, { fields: [articleViews.userId], references: [users.id] }),
+  article: one(articles, {
+    fields: [articleViews.articleId],
+    references: [articles.id],
   }),
 }));

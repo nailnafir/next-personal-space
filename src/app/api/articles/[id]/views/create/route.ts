@@ -1,13 +1,13 @@
+import { articleViews } from "@/lib/schema/database-schema";
+import { viewSchema } from "@/lib/schema/form-schema";
 import { db } from "@/lib/service/drizzle";
-import { articleComments } from "@/lib/schema/database-schema";
-import { NextResponse } from "next/server";
-import { commentSchema } from "@/lib/schema/form-schema";
 import { apiResponse, decodeId } from "@/lib/utils";
+import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsed = commentSchema.parse(body);
+    const parsed = viewSchema.parse(body);
 
     const decodedId = decodeId(parsed.articleId);
     const resultArticleId = Number(decodedId);
@@ -18,15 +18,14 @@ export async function POST(request: Request) {
       });
     }
 
-    const insertedComment = await db
-      .insert(articleComments)
-      .values({
-        articleId: resultArticleId,
-        content: parsed.content,
-        userId: parsed.authorId,
-      })
+    const userId = parsed.authorId;
 
-    return NextResponse.json(apiResponse.ok(insertedComment));
+    const insertedViews = await db.insert(articleViews).values({
+      userId: userId,
+      articleId: resultArticleId,
+    });
+
+    return NextResponse.json(apiResponse.ok(insertedViews));
   } catch (error) {
     return NextResponse.json(apiResponse.error("Server ada masalah: ", error), {
       status: 500,

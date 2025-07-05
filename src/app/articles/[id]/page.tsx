@@ -5,18 +5,22 @@ import Image from "next/image";
 import useSWR from "swr";
 import useSWRMutation from "swr/mutation";
 import TableOfContents from "@/components/table-of-contents";
-import Comments from "@/components/comments";
+import LikesComments from "@/components/likes-comments";
 import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import { toast } from "sonner";
-import { ArticleItemResponse } from "@/model/models";
-import { readArticleId, updateArticleViews } from "@/lib/service/endpoints";
+import { ArticleItemResponse, ViewItemResponse } from "@/model/models";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
 import { AlertCircle, ClipboardCopy, RefreshCcw, Share2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { formatDateTimeIndonesia } from "@/lib/utils";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  createArticleViews,
+  readArticleId,
+  readArticleViews,
+} from "@/lib/service/endpoints";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -27,26 +31,23 @@ import {
 } from "@/components/ui/breadcrumb";
 
 export default function ArticleDetailsPage() {
+  const userId = null;
+
   const { id } = useParams();
 
-  const { trigger: incrementViews } = useSWRMutation(
-    `/api/articles/${id}/view`,
-    async () => await updateArticleViews(id)
+  const { data: views } = useSWR<ViewItemResponse>(
+    `/api/articles/${id}/views`,
+    () => readArticleViews(id, userId),
+    {
+      revalidateOnFocus: false,
+      revalidateOnReconnect: false,
+    }
   );
 
-  useEffect(() => {
-    if (!id) return;
-
-    const key = `viewed-article-${id}`;
-
-    if (sessionStorage.getItem(key)) return;
-
-    incrementViews()
-      .then(() => sessionStorage.setItem(key, "true"))
-      .catch((error: unknown) =>
-        console.error("Gagal memperbarui views:", error)
-      );
-  }, [incrementViews, id]);
+  const { trigger: createViews } = useSWRMutation(
+    `/api/articles/${id}/views/create`,
+    async () => await createArticleViews(id, userId)
+  );
 
   const {
     data: article,
@@ -65,11 +66,21 @@ export default function ArticleDetailsPage() {
   const sections = article?.content.map((section) => section.title);
 
   const handleRetry = async () => {
-    const retryPromise = () => mutate();
+    const retryPromise = (async () => {
+      const data = await mutate();
+
+      if (!data) {
+        throw new Error(error);
+      }
+
+      return data;
+    })();
 
     toast.promise(retryPromise, {
       loading: "Menghubungkan...",
-      success: "Berhasil terhubung ke server, data udah tampil!",
+      success: (data) => {
+        return `Berhasil terhubung ke server, data '${data?.title}' ditampilin!`;
+      },
       error: (error) => {
         return `Servernya gak mau terhubung, ada masalah: ${
           error instanceof Error ? error.message : "Masalah tidak diketahui"
@@ -78,9 +89,13 @@ export default function ArticleDetailsPage() {
     });
   };
 
+  useEffect(() => {
+    createViews();
+  }, [createViews]);
+
   return (
     <div className="transition-all duration-300 bg-background">
-      <div className="mx-auto max-w-7xl max-sm:mx-4">
+      <div className="px-4 mx-auto max-w-7xl">
         {isLoading ? (
           <div className="grid grid-cols-12 gap-8 py-6">
             {/* Left Table Of Contents */}
@@ -125,7 +140,7 @@ export default function ArticleDetailsPage() {
             className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
           >
             <AlertCircle className="!size-24 mb-8 animate-pulse" />
-            <AlertTitle className="flex-col items-center justify-center w-full text-3xl font-bold">
+            <AlertTitle className="flex flex-col items-center justify-center w-full text-3xl font-bold">
               Terjadi Kesalahan
             </AlertTitle>
             <AlertDescription className="flex flex-col items-center justify-center text-base">
@@ -190,9 +205,11 @@ export default function ArticleDetailsPage() {
                       {formatDateTimeIndonesia(article?.publishedAt, "date")}
                     </span>
                     <span>•</span>
-                    <span>{article?.likes || 0} Suka</span>
+                    <span>
+                      {formatDateTimeIndonesia(article?.publishedAt, "time")}
+                    </span>
                     <span>•</span>
-                    <span>{article?.views || 0} Dibaca</span>
+                    <span>{views?.totalViews || 0} Dibaca</span>
                   </div>
                   <div className="flex items-center space-x-4 max-sm:mt-4">
                     <Button
@@ -309,7 +326,7 @@ export default function ArticleDetailsPage() {
 
             {/* Comments section on the right */}
             <aside className="block col-span-12 sm:col-span-3">
-              <Comments articleId={id} authorId={article?.author?.id} />
+              <LikesComments articleId={id} authorId={article?.author?.id} />
             </aside>
           </div>
         )}

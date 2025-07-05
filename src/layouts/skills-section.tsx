@@ -26,11 +26,21 @@ export default function SkillsSection() {
   });
 
   const handleRetry = async () => {
-    const retryPromise = () => mutate();
+    const retryPromise = (async () => {
+      const data = await mutate();
+
+      if (!data) {
+        throw new Error(error);
+      }
+
+      return data;
+    })();
 
     toast.promise(retryPromise, {
       loading: "Menghubungkan...",
-      success: "Berhasil terhubung ke server, data udah tampil!",
+      success: () => {
+        return `Berhasil terhubung ke server, data ditampilin!`;
+      },
       error: (error) => {
         return `Servernya gak mau terhubung, ada masalah: ${
           error instanceof Error ? error.message : "Masalah tidak diketahui"
@@ -89,7 +99,7 @@ export default function SkillsSection() {
                   className="flex flex-col items-center justify-center p-6 border bg-background/50 rounded-xl backdrop-blur border-ring/50"
                 >
                   <AlertCircle className="!size-24 mb-8 animate-pulse" />
-                  <AlertTitle className="flex-col items-center justify-center w-full text-3xl font-bold">
+                  <AlertTitle className="flex flex-col items-center justify-center w-full text-3xl font-bold">
                     Terjadi Kesalahan
                   </AlertTitle>
                   <AlertDescription className="flex flex-col items-center justify-center text-base">

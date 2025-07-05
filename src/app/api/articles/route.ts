@@ -68,8 +68,6 @@ export async function GET(request: NextRequest) {
         subtitle: article?.work?.description,
         thumbnailUrl: article?.work?.imageUrl,
         content: article?.content as ArticleContentModel,
-        views: article?.views,
-        likes: article?.likes,
         status: article?.work?.users?.[0]?.status,
         publishedAt: article?.publishedAt?.toISOString(),
         createdAt: article?.createdAt?.toISOString(),
@@ -102,7 +100,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(apiResponse.ok(response));
   } catch (error) {
-    return NextResponse.json(apiResponse.error("Server ada masalah", error), {
+    return NextResponse.json(apiResponse.error("Server ada masalah: ", error), {
       status: 500,
     });
   }

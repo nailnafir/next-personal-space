@@ -14,3 +14,17 @@ export const commentSchema = z.object({
     .max(255, { message: "Komentar maksimal 255 karakter" }),
   authorId: z.number().nullable().optional(),
 });
+
+export const likeSchema = z.object({
+  articleId: z.string({
+    required_error: "Kode artikel wajib ada",
+  }),
+  authorId: z.number().nullable().optional(),
+});
+
+export const viewSchema = z.object({
+  articleId: z.string({
+    required_error: "Kode artikel wajib ada",
+  }),
+  authorId: z.number().nullable().optional(),
+});
