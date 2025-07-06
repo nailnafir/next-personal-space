@@ -222,7 +222,7 @@ export default function LikesComments({
           </Form>
         </div>
         {loadingComments ? (
-          <div className="relative py-2">
+          <div className="relative py-4">
             <div className="absolute inset-x-0 z-10 h-4 transition duration-300 pointer-events-none top-4 bg-gradient-to-b from-background to-transparent" />
             <div className="absolute inset-x-0 z-10 h-4 transition duration-300 pointer-events-none bottom-4 bg-gradient-to-t from-background to-transparent" />
 
@@ -240,7 +240,7 @@ export default function LikesComments({
             </div>
           </div>
         ) : (
-          <div className="relative py-2">
+          <div className="relative py-4">
             <div className="absolute inset-x-0 z-10 h-6 transition duration-300 pointer-events-none top-4 bg-gradient-to-b from-background via-background/75 to-transparent" />
             <div className="absolute inset-x-0 z-10 h-6 transition duration-300 pointer-events-none bottom-4 bg-gradient-to-t from-background via-background/75 to-transparent" />
             <div className="py-6 space-y-4 overflow-y-auto max-h-96">
@@ -267,11 +267,11 @@ export default function LikesComments({
                     </Avatar>
                   </div>
                   <div className="flex-1">
-                    <div className="flex items-center mb-1 space-x-2">
-                      <h4 className="text-sm font-medium text-foreground">
+                    <div className="flex flex-row items-start my-1 space-x-2">
+                      <h4 className="text-sm w-full font-medium text-foreground">
                         {comment.author?.name || "Pengguna Misterius"}
                       </h4>
-                      <span className="text-xs font-light text-right text-muted-foreground">
+                      <span className="text-xs font-light text-right justify-end text-muted-foreground">
                         {formatTimeRelativeIndonesia(comment.createdAt)}
                       </span>
                     </div>
